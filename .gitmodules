@@ -1,0 +1,3 @@
+[submodule "bundle/bdeformat"]
+	path = bundle/bdeformat
+	url = git@github.com:MovEaxEsp/bdeformat.git
