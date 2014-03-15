@@ -63,7 +63,7 @@ def generate(template, replacements):
 
     templateFile = open(TEMPLATES[template], "r")
 
-    ret = []
+    ret = ""
     replacementStrings = []
     for idx in xrange(len(replacements)):
         replacementStrings.append(("[-" + str(idx + 1) + "-]",
@@ -88,7 +88,7 @@ def generate(template, replacements):
         for function in functionOpenings:
             line = handleFunction(function, line)
 
-        ret.append(line)
+        ret += line
 
     return ret
 
@@ -102,7 +102,7 @@ def expandLine(line):
     if len(parts) == 0 or not isTemplateName(parts[0]):
         return [line]
 
-    return generate(parts[0], parts[1:])
+    return generate(parts[0], parts[1:]).split("\n")[:-1]
 
 if __name__ == "__main__":
     if len(sys.argv) == 1: # No args, each line has its template and arguments
