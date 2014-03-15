@@ -1,0 +1,49 @@
+// [-1-]_[-2-].h           -*-C++-*-
+#ifndef INCLUDED_[+1+]_[+2+]
+#define INCLUDED_[+1+]_[+2+]
+
+#ifndef INCLUDED_BDES_IDENT
+#include <bdes_ident.h>
+#endif
+BDES_IDENT("$Id$ $CSID$")
+
+//@PURPOSE: TODO
+//
+//@CLASSES:
+// TODO
+//
+//@SEE_ALSO:
+//
+//@AUTHOR: Pawel Grzech (pgrzech1)
+//
+//@DESCRIPTION: TODO
+
+namespace BloombergLP {
+namespace [-1-] {
+
+[*template class [=2=]*]
+
+// ============================================================================
+//                      INLINE AND TEMPLATE FUNCTION IMPLEMENTATIONS
+// ============================================================================
+
+                        // [*rep - [*len class.[=2=]*]*]
+                        // class [=2=]
+                        // [*rep - [*len class.[=2=]*]*]
+
+}  // close package namespace
+
+// FREE OPERATORS
+
+}  // close enterprise namespace
+
+#endif
+
+// ----------------------------------------------------------------------------
+// NOTICE:
+//      Copyright (C) Bloomberg L.P., 2013
+//      All Rights Reserved.
+//      Property of Bloomberg L.P. (BLP)
+//      This software is made available solely pursuant to the
+//      terms of a BLP license agreement which governs its use.
+// ------------------------------ END-OF-FILE ---------------------------------

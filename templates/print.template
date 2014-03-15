@@ -1,0 +1,15 @@
+bsl::ostream& [=1=]::print(bsl::ostream& stream,
+                           int           level,
+                           int           spacesPerLevel) const
+{
+    if (stream.bad()) {
+        return stream;
+    }
+
+    bslim::Printer printer(&stream, level, spacesPerLevel);
+    printer.start();
+    //printer.printAttribute("ticker", d_ticker);
+    printer.end();
+
+    return stream;
+}

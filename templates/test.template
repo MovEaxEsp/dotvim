@@ -1,0 +1,14 @@
+        const struct TestData {
+            int d_line;
+        } DATA[] = {
+
+        };
+        const int NUM_DATA = sizeof(DATA)/sizeof(*DATA);
+
+        for (int dataIdx = 0; dataIdx < NUM_DATA; ++dataIdx) {
+            const TestData& data = DATA[dataIdx];
+            const int LINE = data.d_line;
+
+            P(LINE);
+
+        }

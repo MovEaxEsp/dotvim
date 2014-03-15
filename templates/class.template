@@ -1,0 +1,27 @@
+                        // [*rep = [*len class.[=1=]*]*]
+                        // class [=1=]
+                        // [*rep = [*len class.[=1=]*]*]
+
+class [=1=] {
+    // TODO
+
+  private:
+    // DATA
+
+    // NOT IMPLEMENTED
+    [=1=](const [=1=]&);
+    [=1=]& operator=(const [=1=]&);
+
+  public:
+    // TRAITS
+    BSLMF_NESTED_TRAIT_DECLARATION([=1=],
+                                   bslma::UsesBslmaAllocator);
+
+    // CREATORS
+    [=1=](bslma::Allocator *basicAllocator = 0);
+
+    // MANIPULATORS
+
+    // ACCESSORS
+
+};
