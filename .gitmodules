@@ -1,6 +1,6 @@
 [submodule "bundle/bdeformat"]
 	path = bundle/bdeformat
-	url = git@github.com:MovEaxEsp/bdeformat.git
+	url = https://github.com/MovEaxEsp/bdeformat.git
 [submodule "bundle/NERD_tree"]
 	path = bundle/NERD_tree
 	url = https://github.com/scrooloose/nerdtree.git
