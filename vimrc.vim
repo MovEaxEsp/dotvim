@@ -18,6 +18,7 @@ autocmd!
 filetype off
 
 call pathogen#infect()
+call pathogen#helptags()
 
 if !has("gui_running")
     set term=dtterm
@@ -133,10 +134,13 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("e")': ['<c-cr>'],
     \ 'AcceptSelection("t")': ['<cr>', '<c-t>'],
     \ }
-nnoremap <leader><C-P> :CtrlP ~/codelinks<CR>
+nnoremap <leader><C-P> :CtrlP ~/codelinks/bde<CR>
 
-" To get ctrlp in ib2 code.  Not necessary once done working with it
-nnoremap <leader><C-b> :CtrlP ~/mbig/ib2<CR>
+" Gundo settings
+nnoremap <F5> :GundoToggle<CR>
+let g:gundo_preview_height=30
+let g:gundo_preview_bottom=1
+
 
 "**** BINDINGS
 let mapleader = "\\"
