@@ -94,14 +94,7 @@ highlight OverLength guibg=#592929
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
 
-" Set these so we can find BDE headers/source files
-if has("win32") || has("win64")
-    set path+=C:\bde-dev\bde\2.15.2\src
-    set path+=C:\dev\rplus\legacy\src\infrastructure\core\groups
-    set path+=C:\dev\rplus\legacy\src\infrastructure\win\groups
-    set path+=C:\dev\rplus\legacy\src\controls
-    set path+=C:\dev\rplus\groups
-endif
+" For finding BDE files in 'groups' directories in the path
 set includeexpr=BDEFilePath(v:fname)
 
 " CtrlP Settings
