@@ -159,9 +159,6 @@ map <Leader>V :source $MYVIMRC<CR>
 imap <C-BS> <C-w>
 imap <S-Del> <Del>
 
-" Completion
-imap <C-Space> <C-n>
-
 " For building
 map <Left> :cp<CR>zz
 map <Right> :cn<CR>zz
