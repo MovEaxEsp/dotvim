@@ -1,11 +1,5 @@
 " ********************** VIMRC ************************************************
-if !has("win32") && !has("win64")
-    if version >= 703
-        set runtimepath=~/.vim,$VIM/vim73,~/.vim/after
-    else
-        set runtimepath=~/.vim,$VIM/vim72,~/.vim/after
-    endif
-else
+if has("win32") || has("win64")
     set runtimepath=$HOME/.vim
     set runtimepath+=$VIM/vimfiles
     set runtimepath+=$VIMRUNTIME
@@ -18,6 +12,7 @@ autocmd!
 filetype off
 
 call pathogen#infect()
+call pathogen#helptags()
 
 if !has("gui_running")
     set term=dtterm
@@ -91,9 +86,6 @@ if has("gui_running")
     set columns=86
     set lines=999
 
-    " Position in top left corner of right monitor.  This will obviously have
-    " to change if monitor setup changes
-    winpos 2560 -2
 else
     colorscheme zenburn
 endif
@@ -109,13 +101,6 @@ if has("win32") || has("win64")
     set path+=C:\dev\rplus\legacy\src\infrastructure\win\groups
     set path+=C:\dev\rplus\legacy\src\controls
     set path+=C:\dev\rplus\groups
-else
-    set path+=~/mbig/dmp/src/groups
-    set path+=~/mbig/bde/bde-core/groups
-    set path+=~/mbig/bde/bde-bb/groups
-    set path+=~/mbig/bde/bsl-internal/groups
-    set path+=~/mbig/bde/bas-core/groups
-    set path+=/bbsrc
 endif
 set includeexpr=BDEFilePath(v:fname)
 
@@ -135,8 +120,10 @@ let g:ctrlp_prompt_mappings = {
     \ }
 nnoremap <leader><C-P> :CtrlP ~/codelinks<CR>
 
-" To get ctrlp in ib2 code.  Not necessary once done working with it
-nnoremap <leader><C-b> :CtrlP ~/mbig/ib2<CR>
+" Gundo Settings
+nnoremap <F5> :GundoToggle<CR>
+let g:gundo_preview_height = 40
+let g:gundo_preview_bottom = 1
 
 "**** BINDINGS
 let mapleader = "\\"
@@ -214,14 +201,9 @@ map <silent> <leader>x :Template<CR>
 " BDE aligning
 vmap <silent> <Leader>r :call BlockRightAlignRange(79)<CR>gv
 map <silent> <Leader>p :BDEFormat<CR>
-map <silent> <Leader>o :call BDEifyGroupCurLine(79)<CR>
-map <silent> <Leader>d :call BDEifyClassDataRange()<CR>
 
 " Select pasted text
 nmap gV `[V`]
-
-" Don't want snipmate's retabbing
-vnoremap <CR> <CR>
 
 "**** AUTOCMDS
 " Open the specified file (using BDE naming scheme) in new tab
