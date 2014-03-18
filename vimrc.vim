@@ -148,10 +148,7 @@ map <C-Return> :<Up><CR>
 map <silent> <Leader>r :ri 79<CR>
 
 " Clear highlighting
-map <silent> cs :let @/=""<CR>
-
-" Send buffer to http://codepad.org and run, opening result in browser
-map <Leader>c :CPRun<CR>
+map <silent> <leader>/ :let @/=""<CR>
 
 map <Leader>v :tabedit $MYVIMRC<CR>
 map <Leader>V :source $MYVIMRC<CR>
