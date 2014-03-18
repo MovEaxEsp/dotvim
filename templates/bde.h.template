@@ -18,6 +18,10 @@ BDES_IDENT("$Id$ $CSID$")
 //
 //@DESCRIPTION: TODO
 
+[*template inc bslma_usesbslmaallocator*]
+
+[*template inc bslmf_nestedtraitdeclaration*]
+
 namespace BloombergLP {
 namespace [-1-] {
 
@@ -41,7 +45,7 @@ namespace [-1-] {
 
 // ----------------------------------------------------------------------------
 // NOTICE:
-//      Copyright (C) Bloomberg L.P., 2013
+//      Copyright (C) Bloomberg L.P., 2014
 //      All Rights Reserved.
 //      Property of Bloomberg L.P. (BLP)
 //      This software is made available solely pursuant to the
