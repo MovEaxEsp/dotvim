@@ -16,9 +16,6 @@
 [submodule "bundle/tlib"]
 	path = bundle/tlib
 	url = https://github.com/tomtom/tlib_vim.git
-[submodule "bundle/vcscommand"]
-	path = bundle/vcscommand
-	url = git://repo.or.cz/vcscommand
 [submodule "bundle/zenburn"]
 	path = bundle/zenburn
 	url = https://github.com/jnurmine/Zenburn.git

@@ -1,11 +1,5 @@
 " ********************** VIMRC ************************************************
-if !has("win32") && !has("win64")
-    if version >= 703
-        set runtimepath=~/.vim,$VIM/vim73,~/.vim/after
-    else
-        set runtimepath=~/.vim,$VIM/vim72,~/.vim/after
-    endif
-else
+if has("win32") || has("win64")
     set runtimepath=$HOME/.vim
     set runtimepath+=$VIM/vimfiles
     set runtimepath+=$VIMRUNTIME
@@ -92,9 +86,6 @@ if has("gui_running")
     set columns=86
     set lines=999
 
-    " Position in top left corner of right monitor.  This will obviously have
-    " to change if monitor setup changes
-    winpos 2560 -2
 else
     colorscheme zenburn
 endif
@@ -103,21 +94,7 @@ highlight OverLength guibg=#592929
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
 
-" Set these so we can find BDE headers/source files
-if has("win32") || has("win64")
-    set path+=C:\bde-dev\bde\2.15.2\src
-    set path+=C:\dev\rplus\legacy\src\infrastructure\core\groups
-    set path+=C:\dev\rplus\legacy\src\infrastructure\win\groups
-    set path+=C:\dev\rplus\legacy\src\controls
-    set path+=C:\dev\rplus\groups
-else
-    set path+=~/mbig/dmp/src/groups
-    set path+=~/mbig/bde/bde-core/groups
-    set path+=~/mbig/bde/bde-bb/groups
-    set path+=~/mbig/bde/bsl-internal/groups
-    set path+=~/mbig/bde/bas-core/groups
-    set path+=/bbsrc
-endif
+" For finding BDE files in 'groups' directories in the path
 set includeexpr=BDEFilePath(v:fname)
 
 " CtrlP Settings
@@ -141,6 +118,10 @@ nnoremap <F5> :GundoToggle<CR>
 let g:gundo_preview_height=30
 let g:gundo_preview_bottom=1
 
+" Gundo Settings
+nnoremap <F5> :GundoToggle<CR>
+let g:gundo_preview_height = 40
+let g:gundo_preview_bottom = 1
 
 "**** BINDINGS
 let mapleader = "\\"
@@ -172,19 +153,13 @@ map <C-Return> :<Up><CR>
 map <silent> <Leader>r :ri 79<CR>
 
 " Clear highlighting
-map <silent> cs :let @/=""<CR>
-
-" Send buffer to http://codepad.org and run, opening result in browser
-map <Leader>c :CPRun<CR>
+map <silent> <leader>/ :let @/=""<CR>
 
 map <Leader>v :tabedit $MYVIMRC<CR>
 map <Leader>V :source $MYVIMRC<CR>
 
 imap <C-BS> <C-w>
 imap <S-Del> <Del>
-
-" Completion
-imap <C-Space> <C-n>
 
 " For building
 map <Left> :cp<CR>zz
@@ -218,14 +193,9 @@ map <silent> <leader>x :Template<CR>
 " BDE aligning
 vmap <silent> <Leader>r :call BlockRightAlignRange(79)<CR>gv
 map <silent> <Leader>p :BDEFormat<CR>
-map <silent> <Leader>o :call BDEifyGroupCurLine(79)<CR>
-map <silent> <Leader>d :call BDEifyClassDataRange()<CR>
 
 " Select pasted text
 nmap gV `[V`]
-
-" Don't want snipmate's retabbing
-vnoremap <CR> <CR>
 
 "**** AUTOCMDS
 " Open the specified file (using BDE naming scheme) in new tab

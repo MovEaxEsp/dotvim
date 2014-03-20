@@ -4,6 +4,10 @@
 #include <bdes_ident.h>
 BDES_IDENT_RCSID([-1-]_[-2-]_cpp,"$Id$ $CSID$")
 
+///IMPLEMENTATION NOTES
+///--------------------
+//
+
 namespace BloombergLP {
 namespace [-1-] {
 
@@ -22,7 +26,7 @@ namespace [-1-] {
 
 // ----------------------------------------------------------------------------
 // NOTICE:
-//      Copyright (C) Bloomberg L.P., 2013
+//      Copyright (C) Bloomberg L.P., 2014
 //      All Rights Reserved.
 //      Property of Bloomberg L.P. (BLP)
 //      This software is made available solely pursuant to the
