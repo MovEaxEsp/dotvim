@@ -39,11 +39,9 @@ def handleFunction(functionOpening, line):
 
     if tokens[0] == "len":
         # replace the function text with the length of the argument
-        if len(tokens) <> 2:
-            print "Usage: len string"
-            return
-
-        return line.replace(functionText, str(len(tokens[1])))
+        stringToCalc = functionText[functionText.find("len") + 4:
+                                    -len(FUNCTION_CLOSE)]
+        return line.replace(functionText, str(len(stringToCalc)))
     elif tokens[0] == "rep": #replace function text with arg2 copies of arg1
         if len(tokens) <> 3:
             print "Usage: rep seq count"
@@ -66,12 +64,21 @@ def generate(template, replacements):
     ret = ""
     replacementStrings = []
     for idx in xrange(len(replacements)):
+        # Lowercase arg
         replacementStrings.append(("[-" + str(idx + 1) + "-]",
                                    replacements[idx].lower()))
+
+        # Unmodified case arg
         replacementStrings.append(("[=" + str(idx + 1) + "=]",
                                    replacements[idx]))
+
+        # Uppercase arg
         replacementStrings.append(("[+" + str(idx + 1) + "+]",
                                    replacements[idx].upper()))
+
+        # All args from current point forward
+        replacementStrings.append(("[$" + str(idx + 1) + "$]",
+                                  " ".join(replacements[idx:])))
 
     for line in templateFile:
         for replacement in replacementStrings:
