@@ -4,8 +4,6 @@
 
 #include <baesu_stacktracetestallocator.h>
 
-#include <bsls_assert.h>
-
 #include <bsl_iostream.h>
 
 using namespace BloombergLP;
@@ -104,25 +102,7 @@ int main(int argc, char *argv[])
     bsls::Assert::setFailureHandler(&testAssertFailureHandler);
 
     switch (test) { case 0:
-      case 1: {
-        // --------------------------------------------------------------------
-        // BREATHING TEST
-        //
-        // Concerns:
-        //   Exercise the basic functionality of the component.
-        //
-        // Plan:
-        //   TODO
-        //
-        // Testing:
-        //   Basic functionality
-        // --------------------------------------------------------------------
-
-        if (verbose) cout << endl
-                          << "BREATHING TEST" << endl
-                          << "==============" << endl;
-
-      } break;
+[*template test_case 1 BREATHING TEST*]
       default: {
         cerr << "WARNING: CASE '" << test << "' NOT FOUND." << endl;
         testStatus = -1;
@@ -138,11 +118,4 @@ int main(int argc, char *argv[])
     return testStatus;
 }
 
-// ----------------------------------------------------------------------------
-// NOTICE:
-//      Copyright (C) Bloomberg L.P., 2013
-//      All Rights Reserved.
-//      Property of Bloomberg L.P. (BLP)
-//      This software is made available solely pursuant to the
-//      terms of a BLP license agreement which governs its use.
-// ----------------------------- END-OF-FILE ----------------------------------
+[*template copyright*]
