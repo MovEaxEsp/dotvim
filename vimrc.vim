@@ -106,7 +106,6 @@ let g:ctrlp_open_new_file = 't'
 let g:ctrlp_working_path_mode = '0'
 let g:ctrlp_follow_symlinks = 1
 let g:ctrlp_clear_cache_on_exit = 0
-let g:ctrlp_cache_dir = '/tmp/ctrlpcache'
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("e")': ['<c-cr>'],
     \ 'AcceptSelection("t")': ['<cr>', '<c-t>'],
