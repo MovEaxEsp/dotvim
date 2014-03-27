@@ -98,8 +98,6 @@ highlight SpecialKey guifg=#4a4a59
 set includeexpr=BDEFilePath(v:fname)
 
 " CtrlP Settings
-"let g:ctrlp_map = ''
-let g:ctrlp_cmd = 'CtrlP ~/codelinks/own'
 let g:ctrlp_max_height = 30
 let g:ctrlp_by_filename = 0
 let g:ctrlp_open_new_file = 't'
