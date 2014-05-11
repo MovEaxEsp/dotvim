@@ -2,9 +2,7 @@
 #ifndef INCLUDED_[+1+]_[+2+]
 #define INCLUDED_[+1+]_[+2+]
 
-#ifndef INCLUDED_BDES_IDENT
-#include <bdes_ident.h>
-#endif
+[*expandTemplate("inc", "bdes_ident")*]
 BDES_IDENT("$Id$ $CSID$")
 
 //@PURPOSE: TODO
@@ -23,14 +21,9 @@ namespace [-1-] {
 
 [*expandTemplate("class", "[=2=]")*]
 
-// ============================================================================
-//                      INLINE AND TEMPLATE FUNCTION IMPLEMENTATIONS
-// ============================================================================
+[*expandTemplate("inline_header")*]
 
-[*leftCenterRight("", "// " + '-' * len('class [=2=]'), "")*]
-[*leftCenterRight("", "// class [=2=]", "")*]
-[*leftCenterRight("", "// " + '-' * len('class [=2=]'), "")*]
-
+[*expandTemplate("section", "-", "class [=2=]")*]
 
 }  // close package namespace
 

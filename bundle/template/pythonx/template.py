@@ -23,7 +23,13 @@ def leftCenterRight(left, center, right, width=79):
     pad1 = centerPos - len(left)
     pad2 = width - len(right) - centerPos - len(center)
 
-    return left + (' ' * pad1) + center + (' ' * pad2) + right
+    ret = left
+    if len(center) + len(right) > 0:
+        ret += (' ' * pad1) + center
+        if len(right) > 0:
+            ret += (' ' * pad2) + right
+
+    return ret
 
 # End template functions
 
@@ -61,7 +67,7 @@ def generate(template, replacements):
 
     templateFile = open(TEMPLATES[template], "r")
 
-    ret = ""
+    ret = []
     replacementStrings = []
     for idx in xrange(len(replacements)):
         # Lowercase arg
@@ -84,6 +90,7 @@ def generate(template, replacements):
         for replacement in replacementStrings:
             line = line.replace(replacement[0], replacement[1])
 
+        line = line[:-1]
         functionOpenings = [] #Locations of occurrences of FUNCTION_OPEN
         openingIndex = line.find(FUNCTION_OPEN)
         while openingIndex > -1:
@@ -95,9 +102,9 @@ def generate(template, replacements):
         for function in functionOpenings:
             line = handleFunction(function, line)
 
-        ret += line
+        ret.append(line)
 
-    return ret
+    return "\n".join(ret)
 
 def expandLine(line):
     """
@@ -109,7 +116,7 @@ def expandLine(line):
     if len(parts) == 0 or not isTemplateName(parts[0]):
         return [line]
 
-    return generate(parts[0], parts[1:]).split("\n")[:-1]
+    return generate(parts[0], parts[1:]).split("\n")
 
 if __name__ == "__main__":
     addTemplatePath(".")
@@ -124,7 +131,7 @@ if __name__ == "__main__":
 
         sys.exit(0)
     else:
-        print "".join(generate(sys.argv[1], sys.argv[2:])),
+        print generate(sys.argv[1], sys.argv[2:])
         sys.exit(0)
 
     sys.exit(1)
