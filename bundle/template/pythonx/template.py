@@ -9,6 +9,24 @@ TEMPLATES = {}
 FUNCTION_OPEN = "[*"
 FUNCTION_CLOSE = "*]"
 
+
+# Functions intended to be invoked from templates
+def expandTemplate(*args):
+    """
+    Expand the template 'args[0]', passing it the remaining arguments
+    """
+    ret = generate(args[0], args[1:])
+    return ret
+
+def leftCenterRight(left, center, right, width=79):
+    centerPos = (width - len(center))/2
+    pad1 = centerPos - len(left)
+    pad2 = width - len(right) - centerPos - len(center)
+
+    return left + (' ' * pad1) + center + (' ' * pad2) + right
+
+# End template functions
+
 def addTemplatePath(templatePath):
     """
     Add all the *.template files at the specified 'templatePath' to the list of
@@ -31,29 +49,11 @@ def handleFunction(functionOpening, line):
        a copy of line with the result applied to it"""
 
     functionEndIndex = line.find(FUNCTION_CLOSE, functionOpening)
-    functionText = line[functionOpening:functionEndIndex + len(FUNCTION_CLOSE)]
+    functionText = line[functionOpening + len(FUNCTION_OPEN):functionEndIndex]
 
-    tokens = functionText[len(FUNCTION_OPEN):-len(FUNCTION_CLOSE)].split()
-    if len(tokens) < 1:
-        return
-
-    if tokens[0] == "len":
-        # replace the function text with the length of the argument
-        stringToCalc = functionText[functionText.find("len") + 4:
-                                    -len(FUNCTION_CLOSE)]
-        return line.replace(functionText, str(len(stringToCalc)))
-    elif tokens[0] == "rep": #replace function text with arg2 copies of arg1
-        if len(tokens) <> 3:
-            print "Usage: rep seq count"
-            return
-
-        return line.replace(functionText, tokens[1] * int(tokens[2]))
-    elif tokens[0] == "template":
-
-        return generate(tokens[1], tokens[2:])
-    else:
-        print "Unknown function: " + tokens[0]
-        return
+    return line[:functionOpening] + \
+           eval(functionText) + \
+           line[functionEndIndex + len(FUNCTION_CLOSE):]
 
 def generate(template, replacements):
     if template not in TEMPLATES:
@@ -112,6 +112,7 @@ def expandLine(line):
     return generate(parts[0], parts[1:]).split("\n")[:-1]
 
 if __name__ == "__main__":
+    addTemplatePath(".")
     if len(sys.argv) == 1: # No args, each line has its template and arguments
         for line in sys.stdin:
             lineParts = line.split();
@@ -122,7 +123,7 @@ if __name__ == "__main__":
             print "".join(generate(lineParts[0], lineParts[1:])),
 
         sys.exit(0)
-    elif len(sys.argv) % 2 == 0:
+    else:
         print "".join(generate(sys.argv[1], sys.argv[2:])),
         sys.exit(0)
 

@@ -13,7 +13,7 @@
 
         if (verbose) cout << endl
                           << "[$2$]" << endl
-                          << "[*rep = [*len [$2$]*]*]" << endl;
+                          << "[*'=' * len("[$2$]")*]" << endl;
 
 
       } break;

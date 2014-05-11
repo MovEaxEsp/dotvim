@@ -1,4 +1,4 @@
-// [-1-]_[-2-].h           -*-C++-*-
+[*leftCenterRight("// [-1-]_[-2-].h", "", "-*-C++-*-")*]
 #ifndef INCLUDED_[+1+]_[+2+]
 #define INCLUDED_[+1+]_[+2+]
 
@@ -21,15 +21,16 @@ BDES_IDENT("$Id$ $CSID$")
 namespace BloombergLP {
 namespace [-1-] {
 
-[*template class [=2=]*]
+[*expandTemplate("class", "[=2=]")*]
 
 // ============================================================================
 //                      INLINE AND TEMPLATE FUNCTION IMPLEMENTATIONS
 // ============================================================================
 
-                        // [*rep - [*len class.[=2=]*]*]
-                        // class [=2=]
-                        // [*rep - [*len class.[=2=]*]*]
+[*leftCenterRight("", "// " + '-' * len('class [=2=]'), "")*]
+[*leftCenterRight("", "// class [=2=]", "")*]
+[*leftCenterRight("", "// " + '-' * len('class [=2=]'), "")*]
+
 
 }  // close package namespace
 
@@ -39,4 +40,4 @@ namespace [-1-] {
 
 #endif
 
-[*template copyright*]
+[*expandTemplate("copyright")*]

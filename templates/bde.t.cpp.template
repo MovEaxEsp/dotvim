@@ -1,4 +1,4 @@
-// [-1-]_[-2-].t.cpp               -*-C++-*-
+[*leftCenterRight("// [-1-]_[-2-].t.cpp", "", "-*-C++-*-")*]
 
 #include <[-1-]_[-2-].h>
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     bsls::Assert::setFailureHandler(&testAssertFailureHandler);
 
     switch (test) { case 0:
-[*template test_case 1 BREATHING TEST*]
+[*expandTemplate("test_case", "1", "BREATHING TEST")*]
       default: {
         cerr << "WARNING: CASE '" << test << "' NOT FOUND." << endl;
         testStatus = -1;
@@ -118,4 +118,4 @@ int main(int argc, char *argv[])
     return testStatus;
 }
 
-[*template copyright*]
+[*expandTemplate("copyright")*]

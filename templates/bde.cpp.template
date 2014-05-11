@@ -1,4 +1,4 @@
-// [-1-]_[-2-].cpp             -*-C++-*-
+[*leftCenterRight("// [-1-]_[-2-].cpp", "", "-*-C++-*-")*]
 #include <[-1-]_[-2-].h>
 
 #include <bdes_ident.h>
@@ -11,9 +11,9 @@ BDES_IDENT_RCSID([-1-]_[-2-]_cpp,"$Id$ $CSID$")
 namespace BloombergLP {
 namespace [-1-] {
 
-                        // [*rep - [*len class.[=2=]*]*]
-                        // class [=2=]
-                        // [*rep - [*len class.[=2=]*]*]
+[*leftCenterRight("", "// " + '-' * len('class [=2=]'), "")*]
+[*leftCenterRight("", "// class [=2=]", "")*]
+[*leftCenterRight("", "// " + '-' * len('class [=2=]'), "")*]
 
 // CREATORS
 
@@ -24,4 +24,4 @@ namespace [-1-] {
 }  // close package namespace
 }  // close enterprise namespace
 
-[*template copyright*]
+[*expandTemplate("copyright")*]

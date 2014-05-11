@@ -1,6 +1,6 @@
-                        // [*rep = [*len class.[=1=]*]*]
-                        // class [=1=]
-                        // [*rep = [*len class.[=1=]*]*]
+[*leftCenterRight("", "// " + '=' * len('class [=1=]'), "")*]
+[*leftCenterRight("", "// class [=1=]", "")*]
+[*leftCenterRight("", "// " + '=' * len('class [=1=]'), "")*]
 
 class [=1=] {
     // TODO
