@@ -12,8 +12,6 @@ BDES_IDENT("$Id$ $CSID$")
 //
 //@SEE_ALSO:
 //
-//@AUTHOR: Pawel Grzech (pgrzech1)
-//
 //@DESCRIPTION: TODO
 
 namespace BloombergLP {
