@@ -1,0 +1,11 @@
+snippet inc
+#ifndef INCLUDED_`!p snip.rv = t[1].upper()`
+#include <$1.h>
+#endif
+endsnippet
+
+snippet header=
+`!p snip.rv=' '*(39 - (len(t[1]) + len("// "))/2)`// ${1/./=/g}
+`!p snip.rv=' '*(39 - (len(t[1]) + len("// "))/2)`// $1
+`!p snip.rv=' '*(39 - (len(t[1]) + len("// "))/2)`// ${1/./=/g}
+endsnippet
