@@ -1,11 +1,122 @@
-snippet inc
+global !p
+def copyright():
+	import datetime
+	return """// ----------------------------------------------------------------------------
+// NOTICE:
+//      Copyright (C) Bloomberg L.P., {0}
+//      All Rights Reserved.
+//      Property of Bloomberg L.P. (BLP)
+//      This software is made available solely pursuant to the
+//      terms of a BLP license agreement which governs its use.
+// ------------------------------ END-OF-FILE ---------------------------------""".format(datetime.date.today().year)
+
+def rightAlign(width, text):
+    return (width - len(text))*' ' + text
+
+def centerPadding(text):
+	"""
+	Return the padding necessary to center the specified 'text' in a line 79
+	chars wide.
+	"""
+	return ' ' * (39 - (len(text) + len("// "))/2)
+
+def centerBorder(border, text):
+	"""
+	Return the border consisting of the specified 'border' character for
+	specified 'text' centered in a line 79 chars wide.
+	"""
+	return centerPadding(text) + "// " + border*len(text)
+
+def centerComment(text):
+	"""
+	Return the beginning of a centered comment, i.e. the padding and the "// "
+	characters needed to center the specified 'text' in a line 79 chars wide.
+	"""
+	return centerPadding(text) + "// "
+
+def header(border, text):
+	lines = [centerBorder(border, text),
+		     centerComment(text) + text,
+			 centerBorder(border, text)]
+	return "\n".join(lines)
+
+endglobal
+
+snippet inch
 #ifndef INCLUDED_`!p snip.rv = t[1].upper()`
 #include <$1.h>
 #endif
+$0
 endsnippet
 
-snippet header=
-`!p snip.rv=' '*(39 - (len(t[1]) + len("// "))/2)`// ${1/./=/g}
-`!p snip.rv=' '*(39 - (len(t[1]) + len("// "))/2)`// $1
-`!p snip.rv=' '*(39 - (len(t[1]) + len("// "))/2)`// ${1/./=/g}
+snippet inc
+#include <$1.h>
+$0
 endsnippet
+
+snippet copyright
+`!p snip.rv = copyright()`
+endsnippet
+
+snippet h
+// $1_$2.h`!p snip.rv = rightAlign(79 - len("// " + t[1] + "_" + t[2] + ".h"),
+                                   "-*-C++-*-")`
+#ifndef INCLUDED_${1/.*/\U$0\E/}_${2/.*/\U$0\E/}
+#define INCLUDED_${1/.*/\U$0\E/}_${2/.*/\U$0\E/}
+
+#ifndef INCLUDED_BDES_IDENT
+#include <bdes_ident.h>
+#endif
+BDES_IDENT("$Id$ $CSID$")
+
+//@PURPOSE: TODO
+//
+//@CLASSES:
+// TODO
+//
+//@SEE_ALSO:
+//
+//@DESCRIPTION: TODO
+
+namespace BloombergLP {
+namespace $1 {
+
+$0
+
+}  // close package namespace
+}  // close enterprise namespace
+
+#endif
+
+`!p snip.rv = copyright()`
+endsnippet
+
+snippet class
+`!p snip.rv = header("=", "class " + t[1])`
+
+class $1 {
+    // ${5:TODO}
+
+  private:
+    // DATA
+$0
+
+${2:    // NOT IMPLEMENTED
+    $1(const $1&);
+    $1& operator=(const $1&);
+
+}  public:${3:
+    // TRAITS
+    BSLMF_NESTED_TRAIT_DECLARATION($1,
+                                   bslma::UsesBslmaAllocator);
+}
+    // CREATORS
+    `!p snip.rv = "explicit " if len(t[4]) > 0 else ""`$1(${4:bslma::Allocator *basicAllocator = 0});
+
+    // MANIPULATORS
+
+    // ACCESSORS
+
+};
+endsnippet
+

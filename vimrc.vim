@@ -120,6 +120,11 @@ nnoremap <F5> :GundoToggle<CR>
 let g:gundo_preview_height = 40
 let g:gundo_preview_bottom = 1
 
+" UltiSnips Settings
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
 "**** BINDINGS
 let mapleader = "\\"
 
