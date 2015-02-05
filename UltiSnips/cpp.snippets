@@ -42,27 +42,40 @@ def header(border, text):
 
 endglobal
 
+
+
+
+
 snippet inch
 #ifndef INCLUDED_`!p snip.rv = t[1].upper()`
 #include <$1.h>
 #endif
-$0
 endsnippet
+
+
+
 
 snippet inc
 #include <$1.h>
-$0
 endsnippet
+
+
+
+
 
 snippet copyright
 `!p snip.rv = copyright()`
 endsnippet
 
-snippet h
-// $1_$2.h`!p snip.rv = rightAlign(79 - len("// " + t[1] + "_" + t[2] + ".h"),
-                                   "-*-C++-*-")`
-#ifndef INCLUDED_${1/.*/\U$0\E/}_${2/.*/\U$0\E/}
-#define INCLUDED_${1/.*/\U$0\E/}_${2/.*/\U$0\E/}
+
+
+
+
+snippet "// (.*)_([^_]*).h" br
+`!p comp = "// " + match.group(1) + "_" + match.group(2) + ".h"
+snip.rv = comp + rightAlign(79 - len(comp), "-*-C++-*-")`
+`!p guard = match.group(1).upper() + "_" + match.group(2).upper()
+snip.rv = "#ifndef INCLUDED_" + guard + "\n#define INCLUDED_" + guard`
 
 #ifndef INCLUDED_BDES_IDENT
 #include <bdes_ident.h>
@@ -79,7 +92,7 @@ BDES_IDENT("$Id$ $CSID$")
 //@DESCRIPTION: TODO
 
 namespace BloombergLP {
-namespace $1 {
+namespace `!p snip.rv = match.group(1)` {
 
 $0
 
@@ -89,6 +102,15 @@ $0
 #endif
 
 `!p snip.rv = copyright()`
+endsnippet
+
+
+
+
+snippet "h (.)" br
+`!p snip.rv = centerBorder(match.group(1), t[1])`
+`!p snip.rv = centerPadding(t[1]) + "// "`$1
+`!p snip.rv = centerBorder(match.group(1), t[1])`
 endsnippet
 
 snippet class
@@ -120,3 +142,49 @@ ${2:    // NOT IMPLEMENTED
 };
 endsnippet
 
+
+
+
+
+snippet struct
+`!p snip.rv = header("=", "struct " + t[1])`
+
+struct $1 {
+    // ${5:TODO}
+
+  private:
+    // DATA
+$0
+
+${2:    // NOT IMPLEMENTED
+    $1(const $1&);
+    $1& operator=(const $1&);
+
+}  public:${3:
+    // TRAITS
+    BSLMF_NESTED_TRAIT_DECLARATION($1,
+                                   bslma::UsesBslmaAllocator);
+}
+    // CREATORS
+    `!p snip.rv = "explicit " if len(t[4]) > 0 else ""`$1(${4:bslma::Allocator *basicAllocator = 0});
+
+    // MANIPULATORS
+
+    // ACCESSORS
+
+};
+endsnippet
+
+
+
+
+snippet util
+`!p snip.rv = header("=", "struct " + t[1])`
+
+struct $1 {
+    // ${2:TODO}
+
+    // CLASS METHODS
+	$0
+};
+endsnippet
