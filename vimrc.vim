@@ -110,6 +110,7 @@ let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("t")': ['<cr>', '<c-t>'],
     \ }
 let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+nnoremap <leader><C-P> :CtrlP<CR>
 
 " Gundo settings
 nnoremap <F5> :GundoToggle<CR>
