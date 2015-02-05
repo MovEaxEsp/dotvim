@@ -99,16 +99,17 @@ set includeexpr=BDEFilePath(v:fname)
 
 " CtrlP Settings
 let g:ctrlp_max_height = 30
+let g:ctrlp_max_files = 0
 let g:ctrlp_by_filename = 0
 let g:ctrlp_open_new_file = 't'
-let g:ctrlp_working_path_mode = '0'
+let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_follow_symlinks = 1
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_prompt_mappings = {
     \ 'AcceptSelection("e")': ['<c-cr>'],
     \ 'AcceptSelection("t")': ['<cr>', '<c-t>'],
     \ }
-nnoremap <leader><C-P> :CtrlP ~/codelinks/bde<CR>
+let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 
 " Gundo settings
 nnoremap <F5> :GundoToggle<CR>
