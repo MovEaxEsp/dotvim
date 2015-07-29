@@ -1,111 +1,8 @@
+# Snippets common to C++ header/implementation files
+
 global !p
-def copyright():
-	import datetime
-	return """// ----------------------------------------------------------------------------
-// NOTICE:
-//      Copyright (C) Bloomberg L.P., {0}
-//      All Rights Reserved.
-//      Property of Bloomberg L.P. (BLP)
-//      This software is made available solely pursuant to the
-//      terms of a BLP license agreement which governs its use.
-// ------------------------------ END-OF-FILE ---------------------------------""".format(datetime.date.today().year)
-
-def rightAlign(width, text):
-    return (width - len(text))*' ' + text
-
-def centerPadding(text):
-	"""
-	Return the padding necessary to center the specified 'text' in a line 79
-	chars wide.
-	"""
-	return ' ' * (39 - (len(text) + len("// "))/2)
-
-def centerBorder(border, text):
-	"""
-	Return the border consisting of the specified 'border' character for
-	specified 'text' centered in a line 79 chars wide.
-	"""
-	return centerPadding(text) + "// " + border*len(text)
-
-def centerComment(text):
-	"""
-	Return the beginning of a centered comment, i.e. the padding and the "// "
-	characters needed to center the specified 'text' in a line 79 chars wide.
-	"""
-	return centerPadding(text) + "// "
-
-def header(border, text):
-	lines = [centerBorder(border, text),
-		     centerComment(text) + text,
-			 centerBorder(border, text)]
-	return "\n".join(lines)
-
+from ultisnips_util import *
 endglobal
-
-
-
-
-
-snippet inch
-#ifndef INCLUDED_`!p snip.rv = t[1].upper()`
-#include <$1.h>
-#endif
-endsnippet
-
-
-
-
-snippet inc
-#include <$1.h>
-endsnippet
-
-
-
-
-
-snippet copyright
-`!p snip.rv = copyright()`
-endsnippet
-
-
-
-
-
-snippet "// (.*)_([^_]*).h" br
-`!p comp = "// " + match.group(1) + "_" + match.group(2) + ".h"
-snip.rv = comp + rightAlign(79 - len(comp), "-*-C++-*-")`
-`!p guard = match.group(1).upper() + "_" + match.group(2).upper()
-snip.rv = "#ifndef INCLUDED_" + guard + "\n#define INCLUDED_" + guard`
-
-#ifndef INCLUDED_BDES_IDENT
-#include <bdes_ident.h>
-#endif
-BDES_IDENT("$Id$ $CSID$")
-
-//@PURPOSE: TODO
-//
-//@CLASSES:
-// TODO
-//
-//@SEE_ALSO:
-//
-//@DESCRIPTION: TODO
-
-namespace BloombergLP {
-namespace `!p snip.rv = match.group(1)` {
-
-$0
-
-}  // close package namespace
-}  // close enterprise namespace
-
-#endif
-
-`!p snip.rv = copyright()`
-endsnippet
-
-
-
 
 snippet "h (.)" br
 `!p snip.rv = centerBorder(match.group(1), t[1])`
@@ -114,77 +11,52 @@ snippet "h (.)" br
 endsnippet
 
 snippet class
-`!p snip.rv = header("=", "class " + t[1])`
+`!p snip.rv = centerBorder("=", "class " + t[1])`
+`!p snip.rv = centerPadding("class " + t[1]) + "// class "`$1
+`!p snip.rv = centerBorder("=", "class " + t[1])`
 
-class $1 {
-    // ${5:TODO}
-
-  private:
-    // DATA
-$0
-
-${2:    // NOT IMPLEMENTED
-    $1(const $1&);
-    $1& operator=(const $1&);
-
-}  public:${3:
-    // TRAITS
-    BSLMF_NESTED_TRAIT_DECLARATION($1,
-                                   bslma::UsesBslmaAllocator);
-}
-    // CREATORS
-    `!p snip.rv = "explicit " if len(t[4]) > 0 else ""`$1(${4:bslma::Allocator *basicAllocator = 0});
-
-    // MANIPULATORS
-
-    // ACCESSORS
-
-};
+`!p snip.rv = classDef(t[1])`
 endsnippet
-
-
-
-
 
 snippet struct
-`!p snip.rv = header("=", "struct " + t[1])`
+`!p snip.rv = centerBorder("=", "struct " + t[1])`
+`!p snip.rv = centerPadding("struct " + t[1]) + "// struct "`$1
+`!p snip.rv = centerBorder("=", "struct " + t[1])`
 
-struct $1 {
-    // ${5:TODO}
-
-  private:
-    // DATA
-$0
-
-${2:    // NOT IMPLEMENTED
-    $1(const $1&);
-    $1& operator=(const $1&);
-
-}  public:${3:
-    // TRAITS
-    BSLMF_NESTED_TRAIT_DECLARATION($1,
-                                   bslma::UsesBslmaAllocator);
-}
-    // CREATORS
-    `!p snip.rv = "explicit " if len(t[4]) > 0 else ""`$1(${4:bslma::Allocator *basicAllocator = 0});
-
-    // MANIPULATORS
-
-    // ACCESSORS
-
-};
+`!p snip.rv = structDef(t[1])`
 endsnippet
 
-
-
-
 snippet util
-`!p snip.rv = header("=", "struct " + t[1])`
+`!p snip.rv = centerBorder("=", "struct " + t[1])`
+`!p snip.rv = centerPadding("struct " + t[1]) + "// struct "`$1
+`!p snip.rv = centerBorder("=", "struct " + t[1])`
+
+`!p snip.rv = utilDef(t[1])`
+endsnippet
+
+snippet protocol
+`!p snip.rv = centerBorder("=", "class " + t[1])`
+`!p snip.rv = centerPadding("class " + t[1]) + "// class "`$1
+`!p snip.rv = centerBorder("=", "class " + t[1])`
+
+`!p snip.rv = protocolDef(t[1])`
+endsnippet
+
+snippet pod
+`!p snip.rv = header("=", "class " + t[1])`
 
 struct $1 {
-    // ${2:TODO}
+	// TODO
 
-    // CLASS METHODS
-	$0
+	// DATA
 };
+
+endsnippet
+
+snippet inline
+// ============================================================================
+//                      INLINE AND TEMPLATE FUNCTION IMPLEMENTATIONS
+// ============================================================================
+
+$0
 endsnippet
