@@ -64,7 +64,7 @@ set guitabtooltip=%F
 
 "Completion options
 set wildignore+=*.o,*.tsk,*.d,*.dd,*.depends,*.linux,*.ibm,*.sundev1
-set wildignore+=*.hp,*.lastlink,*.edited,*.mapfile
+set wildignore+=*.hp,*.lastlink,*.edited,*.mapfile,cmake.bld
 set wildmode=longest,list,full
 
 if has("gui_running")
@@ -76,9 +76,9 @@ if has("gui_running")
         let g:bigFont = "Consolas:h24"
         set guifont=Consolas:h11
     elseif has("x11")
-        let g:smallFont = "Bitstream\\ Vera\\ Sans\\ Mono\\ 11"
-        let g:bigFont = "Bitstream\\ Vera\\ Sans\\ Mono\\ 24"
-        set guifont=Bitstream\ Vera\ Sans\ Mono\ 11
+        let g:smallFont = "Consolas\\ 13"
+        let g:bigFont = "Consolas\\ 24"
+        set guifont=Consolas\ 13
     endif
 
     " Make the window 80 columns wide and as tall as possible
@@ -102,7 +102,7 @@ let g:ctrlp_max_height = 30
 let g:ctrlp_max_files = 0
 let g:ctrlp_by_filename = 0
 let g:ctrlp_open_new_file = 't'
-let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_working_path_mode = 'rw'
 let g:ctrlp_follow_symlinks = 1
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_prompt_mappings = {
@@ -111,11 +111,6 @@ let g:ctrlp_prompt_mappings = {
     \ }
 let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 nnoremap <leader><C-P> :CtrlP<CR>
-
-" Gundo settings
-nnoremap <F5> :GundoToggle<CR>
-let g:gundo_preview_height=30
-let g:gundo_preview_bottom=1
 
 " Gundo Settings
 nnoremap <F5> :GundoToggle<CR>
@@ -126,6 +121,14 @@ let g:gundo_preview_bottom = 1
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+" vim-easy-align Settings
+vmap a= :EasyAlign =<CR>
+
+" vim-easymotion settings
+map <leader>f <Plug>(easymotion-s)
+map <leader>w <Plug>(easymotion-w)
+map / <Plug>(easymotion-sn)
 
 "**** BINDINGS
 let mapleader = "\\"
@@ -138,9 +141,6 @@ map <S-TAB> gT
 map <Leader>t :tabedit 
 map <Leader>e :edit 
 map <Leader>b :tab sb 
-
-" BDEFile is defined  later
-map <Leader>f :BDEFile 
 
 " Open corresponding .h/.cpp in same window
 map <silent> <Leader><TAB> :A<CR>
@@ -215,3 +215,7 @@ autocmd BufWinLeave * call clearmatches()
 
 autocmd FileType xml setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType xsd setlocal shiftwidth=2 tabstop=2 softtabstop=2
+
+autocmd BufNewFile,BufRead *.md set filetype=markdown
+autocmd BufNewFile,BufRead *.h set filetype=cpp._h
+autocmd BufNewFile,BufRead *.cpp set filetype=cpp._cpp
