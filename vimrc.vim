@@ -71,7 +71,7 @@ if has("gui_running")
     set background=dark
     colorscheme zenburn
 
-    if has("win32") || has("win64")
+    if has("win32") || has("win64") || has("gui_macvim")
         let g:smallFont = "Consolas:h11"
         let g:bigFont = "Consolas:h24"
         set guifont=Consolas:h11
