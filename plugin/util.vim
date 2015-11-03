@@ -66,12 +66,18 @@ endf
 " Move the current tab page offset positions (positve right, negative left)
 function! MoveTab(offset)
     let curTab = tabpagenr()
-    let endPos = curTab + a:offset - 1
+
+    let offset = 1
+    if a:offset < 0
+        let offset = -2
+    endif
+
+    let endPos = curTab + offset
     if endPos == -1
         return
     endif
 
-    let cmd = "tabmove " . (curTab + a:offset - 1)
+    let cmd = "tabmove " . (curTab + offset)
     exec cmd
 endf
 
