@@ -13,10 +13,6 @@ def fileHeader(package, component):
     template = string.Template("""$firstLine
 #include <${package}_${component}.h>
 
-///IMPLEMENTATION NOTES
-///--------------------
-//
-
 namespace BloombergLP {""")
 
     return template.safe_substitute({"firstLine": firstLine,
@@ -30,10 +26,6 @@ def fileFooter():
 
 """ + copyright()
 endglobal
-
-snippet inc
-#include <$1.h>
-endsnippet
 
 snippet classf
 `!p snip.rv = fileHeader(t[1], t[2])`
@@ -71,4 +63,10 @@ $2::~$2()
 }
 
 `!p snip.rv = fileFooter()`
+endsnippet
+
+snippet impnotes
+///IMPLEMENTATION NOTES
+///--------------------
+// $0
 endsnippet

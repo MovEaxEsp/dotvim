@@ -1,0 +1,13 @@
+# Snippets common to all files
+
+global !p
+from ultisnips_util import *
+endglobal
+
+snippet "h (.)" br
+`!p snip.rv = centerBorder(match.group(1), t[1])`
+`!p snip.rv = centerPadding(t[1]) + "// "`$1
+`!p snip.rv = centerBorder(match.group(1), t[1])`
+endsnippet
+
+

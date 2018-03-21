@@ -19,7 +19,7 @@ def centerPadding(text):
     Return the padding necessary to center the specified 'text' in a line 79
     chars wide.
     """
-    return ' ' * (39 - (len(text) + len("// "))/2)
+    return ' ' * int(39 - (len(text) + len("// "))/2)
 
 def centerBorder(border, text):
     """
@@ -131,3 +131,19 @@ def protocolDef(name):
 };""")
 
     return template.safe_substitute({"name":name})
+
+def enumDef(name):
+    """
+    Return the definition of an enum struct with the specified 'name'.
+    """
+
+    template = string.Template("""struct $name {
+
+    enum Enum {
+
+    };
+};""")
+
+    return template.safe_substitute({"name":name})
+
+

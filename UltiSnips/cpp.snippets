@@ -4,10 +4,8 @@ global !p
 from ultisnips_util import *
 endglobal
 
-snippet "h (.)" br
-`!p snip.rv = centerBorder(match.group(1), t[1])`
-`!p snip.rv = centerPadding(t[1]) + "// "`$1
-`!p snip.rv = centerBorder(match.group(1), t[1])`
+snippet inc
+#include <$1.h>
 endsnippet
 
 snippet class
@@ -42,6 +40,14 @@ snippet protocol
 `!p snip.rv = protocolDef(t[1])`
 endsnippet
 
+snippet enum
+`!p snip.rv = centerBorder("=", "struct " + t[1])`
+`!p snip.rv = centerPadding("struct " + t[1]) + "// struct "`$1
+`!p snip.rv = centerBorder("=", "struct " + t[1])`
+
+`!p snip.rv = enumDef(t[1])`
+endsnippet
+
 snippet pod
 `!p snip.rv = header("=", "class " + t[1])`
 
@@ -52,6 +58,28 @@ struct $1 {
 };
 
 endsnippet
+
+snippet test_case "test case" m
+case $1: {
+  // --------------------------------------------------------------------
+  // $2
+  //
+  // Concerns:
+  //  a) $0
+  //
+  // Plan:
+  //  1)
+  //
+  // Testing:
+  // --------------------------------------------------------------------
+
+  if (verbose) cout << endl
+                    << "$2" << endl
+`!p snip.rv = "                    << \"" + "="*len(t[2]) + "\" << endl;"`
+
+} break;
+endsnippet
+
 
 snippet inline
 // ============================================================================
