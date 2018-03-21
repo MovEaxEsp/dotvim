@@ -50,10 +50,8 @@ set relativenumber
 set textwidth=78
 set numberwidth=6 " Width of 'number'/'relativenumber' section
 set scrolloff=20 " Keep lines above and below cursor when possible
-set list "Show hidden characters (controlled by listchars)
 set hidden "Allow switching away from buffers with unsaved changes
 set showtabline=2 "Always show tab line, even with only one tab
-set listchars=eol:¬,tab:>\ 
 set colorcolumn=80
 
 "Show if modified, buffer number, and filename
@@ -63,12 +61,15 @@ set guitablabel=%M\ %n\ %t
 set guitabtooltip=%F
 
 "Completion options
-set wildignore+=*.o,*.tsk,*.d,*.dd,*.depends,*.linux,*.ibm,*.sundev1
-set wildignore+=*.hp,*.lastlink,*.edited,*.mapfile,cmake.bld
+set wildignore+=*.o,*.tsk,*.d,*.dd,*.depends,*plink_timestamp.*,tmp,*.log.*
+set wildignore+=*.linux,*.ibm,*.sundev1,*.linux.64,*.ibm.64,*.sundev1.64
+set wildignore+=*.hp,*.lastlink,*.edited,*.mapfile,cmake.bld,buildDir,overlays
 set wildmode=longest,list,full
 
 if has("gui_running")
     set background=dark
+    set list "Show hidden characters (controlled by listchars)
+    set listchars=eol:¬,tab:>\ 
     colorscheme zenburn
 
     if has("win32") || has("win64") || has("gui_macvim")
@@ -129,6 +130,7 @@ vmap a= :EasyAlign =<CR>
 map <leader>f <Plug>(easymotion-s)
 map <leader>w <Plug>(easymotion-w)
 map / <Plug>(easymotion-sn)
+nnoremap // /
 
 "**** BINDINGS
 let mapleader = "\\"
@@ -200,6 +202,9 @@ map <silent> <Leader>p :BDEFormat<CR>
 
 " Select pasted text
 nmap gV `[V`]
+
+" Set width of window
+map <leader>c :set columns=86<CR>
 
 "**** AUTOCMDS
 " Open the specified file (using BDE naming scheme) in new tab
