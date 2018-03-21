@@ -64,6 +64,7 @@ set guitabtooltip=%F
 set wildignore+=*.o,*.tsk,*.d,*.dd,*.depends,*plink_timestamp.*,tmp,*.log.*
 set wildignore+=*.linux,*.ibm,*.sundev1,*.linux.64,*.ibm.64,*.sundev1.64
 set wildignore+=*.hp,*.lastlink,*.edited,*.mapfile,cmake.bld,buildDir,overlays
+set wildignore+=*.obj
 set wildmode=longest,list,full
 
 if has("gui_running")
