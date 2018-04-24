@@ -14,7 +14,7 @@ filetype off
 call pathogen#infect()
 call pathogen#helptags()
 
-if !has("gui_running")
+if !has("gui_running") && !has("nvim")
     set term=dtterm
 endif
 
@@ -26,7 +26,10 @@ filetype plugin indent on
 set t_md=
 syntax on
 set mouse=a
-set ttymouse=xterm
+
+if !has("nvim")
+    set ttymouse=xterm
+endif
 
 set vb
 set t_vb=
