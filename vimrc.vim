@@ -11,11 +11,34 @@ set nocompatible
 autocmd!
 filetype off
 
-call pathogen#infect()
-call pathogen#helptags()
+" Plugins
+call plug#begin('~/.vim/plugs')
+
+Plug 'scrooloose/nerdtree'
+Plug 'vim-scripts/a.vim'
+Plug 'MovEaxEsp/bdeformat'
+Plug 'FelikZ/ctrlp-py-matcher'
+Plug 'kien/ctrlp.vim'
+Plug 'Shougo/deoplete.nvim'
+Plug 'Lokaltog/vim-easymotion'
+Plug 'tommcdo/vim-exchange'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-scripts/Gundo'
+Plug 'vim-scripts/matchit.zip'
+Plug 'ervandew/sgmlendtag'
+Plug 'tomtom/tlib_vim'
+Plug 'SirVer/ultisnips'
+Plug 'junegunn/vim-easy-align'
+Plug 'jnurmine/Zenburn'
+
+call plug#end()
 
 if !has("gui_running") && !has("nvim")
     set term=dtterm
+endif
+
+if has ("nvim")
+    let g:deoplete#enable_at_startup=1
 endif
 
 set guioptions-=m "No menu bar
@@ -53,7 +76,8 @@ set relativenumber
 set textwidth=78
 set numberwidth=6 " Width of 'number'/'relativenumber' section
 set scrolloff=20 " Keep lines above and below cursor when possible
-set hidden "Allow switching away from buffers with unsaved changes
+set nohidden
+set confirm
 set showtabline=2 "Always show tab line, even with only one tab
 set colorcolumn=80
 
