@@ -2,9 +2,209 @@
 
 global !p
 from ultisnips_util import *
+
+# Return the file header for the specified package and component in a header
+# file
+def fileHeader_h(package, component):
+	comp = "// " + package + "_" + component.lower() + ".h"
+	firstLine = comp + rightAlign(79 - len(comp), "-*-C++-*-")
+
+	guard = "INCLUDED_" + package.upper() + "_" + component.upper()
+
+	template = """$firstLine
+#ifndef $guard
+#define $guard
+
+//@PURPOSE: TODO
+//
+//@CLASSES:
+// """ + package + "::" + component + """
+//
+//@SEE_ALSO:
+//
+//@DESCRIPTION: TODO
+
+namespace BloombergLP {"""
+
+	return string.Template(template).safe_substitute({
+		"firstLine": firstLine,
+		"guard":guard
+	})
+
+# Return the file footer
+def fileFooter_h():
+	return """}  // close package namespace
+}  // close enterprise namespace
+
+#endif
+
+""" + copyright()
+
+# Return the file header for the specified package and component for a cpp
+# file
+def fileHeader_cpp(package, component):
+    comp = "// " + package + "_" + component.lower() + ".cpp"
+    firstLine = comp + rightAlign(79 - len(comp), "-*-C++-*-")
+
+    guard = "INCLUDED_" + package.upper() + "_" + component.upper()
+
+    template = string.Template("""$firstLine
+#include <${package}_${component}.h>
+
+namespace BloombergLP {""")
+
+    return template.safe_substitute({"firstLine": firstLine,
+                                     "package": package.lower(),
+                                     "component": component.lower()})
+
+# Return the file footer
+def fileFooter_cpp():
+    return """}  // close package namespace
+}  // close enterprise namespace
+
+""" + copyright()
+
+def genCctorMemSnippet(snip):
+	"""For each line from the current line to either an empty line or a line
+	with just a '{', convert the member name into a member initialization.
+	If 'basicAllocator' or 'allocator' is found above in the constructor arg
+	list, allow the user to pass the allocator to each member.
+	"""
+
+	# Search up for either 'basicAllocator' or 'allocator'
+	allocName = ""
+	for l in range(snip.line, 0, -1):
+		if re.match(r'.*\bbasicAllocator\b', snip.buffer[l]):
+			allocName = "basicAllocator"
+			break
+		elif re.match(r'.*\ballocator\b', snip.buffer[l]):
+			allocName = "allocator"
+			break
+		elif len(snip.buffer[l].strip()) == 0:
+			break
+
+	retLines = []
+	snipNum = 2
+	while snip.buffer[snip.line].strip() != "{":
+		l = snip.buffer[snip.line]
+
+		snipLine = "$1: " if snipNum == 2 else ", "
+		snipLine += l + "(other." + l
+
+		# Gen optional allocator for each member if constructor took an
+		# allocator
+		if len(allocName) > 0:
+			allocString = ("${%d:, " + allocName + "}") % snipNum
+			snipNum += 1
+
+			snipLine += allocString
+
+		snipLine += ")"
+
+		retLines.append(snipLine)
+
+		del snip.buffer[snip.line]
+
+	retLines.append("")
+	snip.expand_anon("\n".join(retLines))
+
+def genInitMemSnippet(snip):
+
+	# Search up for either 'basicAllocator' or 'allocator'
+	allocName = ""
+	for l in range(snip.line, 0, -1):
+		if re.match(r'.*\bbasicAllocator\b', snip.buffer[l]):
+			allocName = "basicAllocator"
+			break
+		elif re.match(r'.*\ballocator\b', snip.buffer[l]):
+			allocName = "allocator"
+			break
+		elif len(snip.buffer[l].strip()) == 0:
+			break
+
+	# If line above snip.line starts with ', ' or ': ' then we'll start with
+	# ', ', otherwise we'll start with ': '
+	prevLine = snip.buffer[snip.line].strip()
+	startSeparator = ", " if (prevLine.startswith(": ") or
+							  prevLine.startswith(", ")) else \
+					 ": "
+
+	retLines = []
+	snipNum = 2
+	while snip.buffer[snip.line].strip() != "---":
+		l = snip.buffer[snip.line]
+
+		snipLine = ("$1" + startSeparator) if snipNum == 2 else ", "
+		snipLine += l + "("
+
+		snipLine += "$%d" % snipNum
+		snipNum += 1
+
+		# Gen optional allocator for each member if constructor took an
+		# allocator
+		if len(allocName) > 0:
+			allocString = ("${%d:, " + allocName + "}") % snipNum
+			snipNum += 1
+
+			snipLine += allocString
+
+		snipLine += ")"
+
+		retLines.append(snipLine)
+
+		del snip.buffer[snip.line]
+
+	del snip.buffer[snip.line] # delete delimiter line
+
+	retLines.append("")
+	snip.expand_anon("\n".join(retLines))
+
+def cleanupMembers(decl):
+	"""Cleanup the specified member variable declaration 'decl
+	'' by removing all comments and types and leaving just member names
+	without semicolons."""
+
+	# Remove comments
+	mems = re.sub(r'//.*', '', decl)
+
+	# Remove empty
+	mems = re.sub(r'\n\s*\n', '\n', mems, 0, re.MULTILINE)
+
+	# Remove declarations/semicolon
+	mems = "\n".join(
+		[re.sub(r'.*[ *&]([^ *&]*);.*', r'\1', l) \
+			for l in mems.split('\n')[:-1]])
+
+	return mems
+
 endglobal
 
-snippet inc
+								# cctor
+
+# TODO write some python to search up for a class/struct header to
+# auto-determine the class-name
+pre_expand "snip.buffer[snip.line] = ''; snip.cursor.set(snip.line, 0)"
+post_jump "if snip.tabstop == 0: genCctorMemSnippet(snip)"
+snippet cctor
+$1::$1(const $1& other, ${2:bslma::Allocator *basicAllocator = 0})
+$0`!p snip.rv = cleanupMembers(snip.v.text)`
+{
+}
+endsnippet
+
+								# ctormem
+
+pre_expand "snip.buffer[snip.line] = ''; snip.cursor.set(snip.line, 0)"
+post_jump "if snip.tabstop == 0: genInitMemSnippet(snip)"
+snippet ctormem
+$0`!p snip.rv = cleanupMembers(snip.v.text)`
+---
+endsnippet
+
+
+
+
+snippet inc "C include directive" bA
 #include <$1.h>
 endsnippet
 
@@ -14,6 +214,30 @@ snippet class
 `!p snip.rv = centerBorder("=", "class " + t[1])`
 
 `!p snip.rv = classDef(t[1])`
+endsnippet
+
+snippet classh
+`!p snip.rv = fileHeader_h(t[1], t[2])`
+namespace $1 {
+
+`!p snip.rv = centerBorder("=", "class " + t[2])`
+`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerBorder("=", "class " + t[2])`
+
+`!p snip.rv = classDef(t[2])`
+
+`!p snip.rv = fileFooter_h()`
+endsnippet
+
+snippet classcpp
+`!p snip.rv = fileHeader_cpp(t[1], t[2])`
+namespace $1 {
+
+`!p snip.rv = centerBorder("-", "class " + t[2])`
+`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerBorder("-", "class " + t[2])`
+
+`!p snip.rv = fileFooter_cpp()`
 endsnippet
 
 snippet struct
@@ -32,12 +256,65 @@ snippet util
 `!p snip.rv = utilDef(t[1])`
 endsnippet
 
+snippet utilh
+`!p snip.rv = fileHeader_h(t[1], t[2])`
+namespace $1 {
+
+`!p snip.rv = centerBorder("=", "struct " + t[2])`
+`!p snip.rv = centerPadding("struct " + t[2]) + "// struct "`$2
+`!p snip.rv = centerBorder("=", "struct " + t[2])`
+
+`!p snip.rv = utilDef(t[2])`
+
+`!p snip.rv = fileFooter_h()`
+endsnippet
+
+snippet utilcpp
+`!p snip.rv = fileHeader_cpp(t[1], t[2])`
+namespace $1 {
+
+`!p snip.rv = centerBorder("-", "struct " + t[2])`
+`!p snip.rv = centerPadding("struct " + t[2]) + "// struct "`$2
+`!p snip.rv = centerBorder("-", "struct " + t[2])`
+
+`!p snip.rv = fileFooter_cpp()`
+endsnippet
+
 snippet protocol
 `!p snip.rv = centerBorder("=", "class " + t[1])`
 `!p snip.rv = centerPadding("class " + t[1]) + "// class "`$1
 `!p snip.rv = centerBorder("=", "class " + t[1])`
 
 `!p snip.rv = protocolDef(t[1])`
+endsnippet
+
+snippet protocolh
+`!p snip.rv = fileHeader_h(t[1], t[2])`
+namespace $1 {
+
+`!p snip.rv = centerBorder("=", "class " + t[2])`
+`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerBorder("=", "class " + t[2])`
+
+`!p snip.rv = protocolDef(t[2])`
+
+`!p snip.rv = fileFooter_h()`
+endsnippet
+
+snippet protocolcpp
+`!p snip.rv = fileHeader_cpp(t[1], t[2])`
+namespace $1 {
+
+`!p snip.rv = centerBorder("-", "class " + t[2])`
+`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerBorder("-", "class " + t[2])`
+
+// CREATORS
+$2::~$2()
+{
+}
+
+`!p snip.rv = fileFooter_cpp()`
 endsnippet
 
 snippet enum
@@ -87,4 +364,86 @@ snippet inline
 // ============================================================================
 
 $0
+endsnippet
+
+snippet tester
+                               // ============
+                               // class Tester
+                               // ============
+
+class Tester {
+    // Helper class testing $1, wrapping its creation and
+    // providing convenient wrappers for calling its functions and checking
+    // its results.
+    //
+    // Many of the functions take a 'int line' argument, which is always
+    // passed 'L_' and is used in assertion messages to find where an error
+    // occurred.
+
+    // DATA
+    bslma::Allocator      *d_allocator_p
+    bslma::ManagedPtr<$1>  d_object;
+
+    // PRIVATE MANIPULATORS
+    void destroy();
+    	// Destroy the object being tested and reset all supporting objects.
+
+    // NOT IMPLEMENTED
+    Tester(const Tester&);
+    Tester& operator=(const Tester&);
+
+  public:
+    // TRAITS
+    BSLMF_NESTED_TRAIT_DECLARATION(Tester,
+    							   bslma::UsesBslmaAllocator);
+
+    // CREATORS
+    explicit Tester(bslma::Allocator *basicAllocator = 0);
+	~Tester();
+
+    // MANIPULATORS
+    void init(int line);
+        // (Re-)create the object being tested and reset the state of any
+        // supporting objects.
+
+    $1& object();
+        // Return a reference providing modifiable access to the object being
+        // tested.
+
+};
+
+                               // ------------
+                               // class Tester
+                               // ------------
+
+// PRIVATE MANIPULATORS
+void Tester::destroy()
+{
+    d_object.reset();
+}
+
+// CREATORS
+Tester::Tester(bslma::Allocator *basicAllocator)
+: d_allocator_p(bslma::Default::allocator(basicAllocator))
+, d_object()
+{
+}
+
+Tester::Tester()
+{
+	destroy();
+}
+
+// MANIPULATORS
+void Tester::init(int line)
+{
+    d_object.load(new (*d_allocator_p) $1(d_allocator_p),
+                  d_allocator_p);
+}
+
+$1& Tester::object()
+{
+    return *d_object;
+}
+
 endsnippet
