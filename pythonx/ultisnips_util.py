@@ -1,4 +1,5 @@
 import string
+import vim
 
 def copyright():
     import datetime
@@ -11,6 +12,23 @@ def copyright():
 //      terms of a BLP license agreement which governs its use.
 // ------------------------------ END-OF-FILE ---------------------------------""".format(datetime.date.today().year)
 
+def getFtCommentStr(ft = None):
+    """
+    Get the comment string for the specified 'ft', or for the filetype of the
+    current vim buffer if 'ft == None'
+    """
+
+    if not ft:
+        ft = vim.current.buffer.options['ft']
+
+    if ft == "c" or ft == "cpp":
+        return "// "
+    elif ft == "python":
+        return "# "
+    else:
+        # Most other things use # (I think)
+        return "# "
+
 def rightAlign(width, text):
     return (width - len(text))*' ' + text
 
@@ -19,21 +37,23 @@ def centerPadding(text):
     Return the padding necessary to center the specified 'text' in a line 79
     chars wide.
     """
-    return ' ' * int(39 - (len(text) + len("// "))/2)
+    return ' ' * int(39 - (len(text))/2)
 
-def centerBorder(border, text):
+def centerBorder(border, text, commentStr="// "):
     """
-    Return the border consisting of the specified 'border' character for
-    specified 'text' centered in a line 79 chars wide.
+    Return the border consisting of the specified 'border' character,
+    beginning with the specified 'commentStr' for the specified 'text'
+    centered in a line 79 chars wide.
     """
-    return centerPadding(text) + "// " + border*len(text)
+    return centerPadding(commentStr + text) + commentStr + border*len(text)
 
-def centerComment(text):
+def centerComment(text, commentStr="// "):
     """
-    Return the beginning of a centered comment, i.e. the padding and the "// "
-    characters needed to center the specified 'text' in a line 79 chars wide.
+    Return the beginning of a centered comment, i.e. the padding and the
+    specified 'commentStr' characters needed to center the specified 'text' in
+    a line 79 chars wide.
     """
-    return centerPadding(text) + "// "
+    return centerPadding(commentStr + text) + commentStr
 
 def header(border, text):
     lines = [

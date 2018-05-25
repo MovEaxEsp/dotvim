@@ -210,7 +210,7 @@ endsnippet
 
 snippet class
 `!p snip.rv = centerBorder("=", "class " + t[1])`
-`!p snip.rv = centerPadding("class " + t[1]) + "// class "`$1
+`!p snip.rv = centerPadding("// class " + t[1]) + "// class "`$1
 `!p snip.rv = centerBorder("=", "class " + t[1])`
 
 `!p snip.rv = classDef(t[1])`
@@ -221,7 +221,7 @@ snippet classh
 namespace $1 {
 
 `!p snip.rv = centerBorder("=", "class " + t[2])`
-`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerPadding("// class " + t[2]) + "// class "`$2
 `!p snip.rv = centerBorder("=", "class " + t[2])`
 
 `!p snip.rv = classDef(t[2])`
@@ -234,7 +234,7 @@ snippet classcpp
 namespace $1 {
 
 `!p snip.rv = centerBorder("-", "class " + t[2])`
-`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerPadding("// class " + t[2]) + "// class "`$2
 `!p snip.rv = centerBorder("-", "class " + t[2])`
 
 `!p snip.rv = fileFooter_cpp()`
@@ -242,7 +242,7 @@ endsnippet
 
 snippet struct
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
-`!p snip.rv = centerPadding("struct " + t[1]) + "// struct "`$1
+`!p snip.rv = centerPadding("// struct " + t[1]) + "// struct "`$1
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
 
 `!p snip.rv = structDef(t[1])`
@@ -250,7 +250,7 @@ endsnippet
 
 snippet util
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
-`!p snip.rv = centerPadding("struct " + t[1]) + "// struct "`$1
+`!p snip.rv = centerPadding("// struct " + t[1]) + "// struct "`$1
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
 
 `!p snip.rv = utilDef(t[1])`
@@ -261,7 +261,7 @@ snippet utilh
 namespace $1 {
 
 `!p snip.rv = centerBorder("=", "struct " + t[2])`
-`!p snip.rv = centerPadding("struct " + t[2]) + "// struct "`$2
+`!p snip.rv = centerPadding("// struct " + t[2]) + "// struct "`$2
 `!p snip.rv = centerBorder("=", "struct " + t[2])`
 
 `!p snip.rv = utilDef(t[2])`
@@ -274,7 +274,7 @@ snippet utilcpp
 namespace $1 {
 
 `!p snip.rv = centerBorder("-", "struct " + t[2])`
-`!p snip.rv = centerPadding("struct " + t[2]) + "// struct "`$2
+`!p snip.rv = centerPadding("// struct " + t[2]) + "// struct "`$2
 `!p snip.rv = centerBorder("-", "struct " + t[2])`
 
 `!p snip.rv = fileFooter_cpp()`
@@ -282,7 +282,7 @@ endsnippet
 
 snippet protocol
 `!p snip.rv = centerBorder("=", "class " + t[1])`
-`!p snip.rv = centerPadding("class " + t[1]) + "// class "`$1
+`!p snip.rv = centerPadding("// class " + t[1]) + "// class "`$1
 `!p snip.rv = centerBorder("=", "class " + t[1])`
 
 `!p snip.rv = protocolDef(t[1])`
@@ -293,7 +293,7 @@ snippet protocolh
 namespace $1 {
 
 `!p snip.rv = centerBorder("=", "class " + t[2])`
-`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerPadding("// class " + t[2]) + "// class "`$2
 `!p snip.rv = centerBorder("=", "class " + t[2])`
 
 `!p snip.rv = protocolDef(t[2])`
@@ -306,7 +306,7 @@ snippet protocolcpp
 namespace $1 {
 
 `!p snip.rv = centerBorder("-", "class " + t[2])`
-`!p snip.rv = centerPadding("class " + t[2]) + "// class "`$2
+`!p snip.rv = centerPadding("// class " + t[2]) + "// class "`$2
 `!p snip.rv = centerBorder("-", "class " + t[2])`
 
 // CREATORS
@@ -319,7 +319,7 @@ endsnippet
 
 snippet enum
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
-`!p snip.rv = centerPadding("struct " + t[1]) + "// struct "`$1
+`!p snip.rv = centerPadding("// struct " + t[1]) + "// struct "`$1
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
 
 `!p snip.rv = enumDef(t[1])`
