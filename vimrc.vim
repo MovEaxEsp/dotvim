@@ -18,18 +18,22 @@ Plug 'scrooloose/nerdtree'
 Plug 'vim-scripts/a.vim'
 Plug 'MovEaxEsp/bdeformat'
 Plug 'FelikZ/ctrlp-py-matcher'
-Plug 'kien/ctrlp.vim'
-Plug 'Shougo/deoplete.nvim'
+Plug 'ctrlpvim/ctrlp.vim'
+"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"Plug 'tweekmonster/deoplete-clang2'
+Plug 'Valloric/YouCompleteMe'
 Plug 'Lokaltog/vim-easymotion'
 Plug 'tommcdo/vim-exchange'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/Gundo'
 Plug 'vim-scripts/matchit.zip'
 Plug 'ervandew/sgmlendtag'
+Plug 'ervandew/supertab'
 Plug 'tomtom/tlib_vim'
 Plug 'SirVer/ultisnips'
 Plug 'junegunn/vim-easy-align'
 Plug 'jnurmine/Zenburn'
+Plug 'itchyny/lightline.vim'
 
 call plug#end()
 
@@ -37,9 +41,10 @@ if !has("gui_running") && !has("nvim")
     set term=dtterm
 endif
 
-if has ("nvim")
-    let g:deoplete#enable_at_startup=1
-endif
+" YCM
+map Yg :YcmCompleter GoTo<CR>
+map Yf :YcmCompleter FixIt<CR>
+map Yt :YcmCompleter GetType<CR>
 
 set guioptions-=m "No menu bar
 set guioptions-=T "No toolbar
@@ -78,6 +83,7 @@ set numberwidth=6 " Width of 'number'/'relativenumber' section
 set scrolloff=20 " Keep lines above and below cursor when possible
 set nohidden
 set confirm
+set signcolumn=yes
 set showtabline=2 "Always show tab line, even with only one tab
 set colorcolumn=80
 
@@ -119,6 +125,27 @@ else
     colorscheme zenburn
 endif
 
+" Terminal configuration
+if has("nvim")
+    tnoremap <C-\><C-\> <C-\><C-n>
+
+    tnoremap <A-Left>  <C-\><C-N><C-w>h
+    inoremap <A-Left>  <C-\><C-N><C-w>h
+    nnoremap <A-Left>  <C-\><C-N><C-w>h
+    tnoremap <A-Down>  <C-\><C-N><C-w>j
+    inoremap <A-Down>  <C-\><C-N><C-w>j
+    nnoremap <A-Down>  <C-\><C-N><C-w>j
+    tnoremap <A-Up>    <C-\><C-N><C-w>k
+    inoremap <A-Up>    <C-\><C-N><C-w>k
+    nnoremap <A-Up>    <C-\><C-N><C-w>k
+    tnoremap <A-Right> <C-\><C-N><C-w>l
+    inoremap <A-Right> <C-\><C-N><C-w>l
+    nnoremap <A-Right> <C-\><C-N><C-w>l
+
+	au TermOpen * setlocal list signcolumn=no nonumber
+endif
+
+
 highlight OverLength guibg=#592929
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
@@ -150,6 +177,12 @@ let g:gundo_preview_bottom = 1
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+" make YCM compatible with UltiSnips (using supertab)
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:SuperTabDefaultCompletionType = '<C-n>'
+
 
 " vim-easy-align Settings
 vmap a= :EasyAlign =<CR>
@@ -250,5 +283,3 @@ autocmd FileType xml setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType xsd setlocal shiftwidth=2 tabstop=2 softtabstop=2
 
 autocmd BufNewFile,BufRead *.md set filetype=markdown
-autocmd BufNewFile,BufRead *.h set filetype=cpp._h
-autocmd BufNewFile,BufRead *.cpp set filetype=cpp._cpp
