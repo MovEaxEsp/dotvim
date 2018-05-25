@@ -64,51 +64,16 @@ def fileFooter_cpp():
 
 """ + copyright()
 
-def genCctorMemSnippet(snip):
-	"""For each line from the current line to either an empty line or a line
-	with just a '{', convert the member name into a member initialization.
-	If 'basicAllocator' or 'allocator' is found above in the constructor arg
-	list, allow the user to pass the allocator to each member.
+def genInitMemSnippet(snip, delimiter, deleteDelimiter, initDataFn):
 	"""
-
-	# Search up for either 'basicAllocator' or 'allocator'
-	allocName = ""
-	for l in range(snip.line, 0, -1):
-		if re.match(r'.*\bbasicAllocator\b', snip.buffer[l]):
-			allocName = "basicAllocator"
-			break
-		elif re.match(r'.*\ballocator\b', snip.buffer[l]):
-			allocName = "allocator"
-			break
-		elif len(snip.buffer[l].strip()) == 0:
-			break
-
-	retLines = []
-	snipNum = 2
-	while snip.buffer[snip.line].strip() != "{":
-		l = snip.buffer[snip.line]
-
-		snipLine = "$1: " if snipNum == 2 else ", "
-		snipLine += l + "(other." + l
-
-		# Gen optional allocator for each member if constructor took an
-		# allocator
-		if len(allocName) > 0:
-			allocString = ("${%d:, " + allocName + "}") % snipNum
-			snipNum += 1
-
-			snipLine += allocString
-
-		snipLine += ")"
-
-		retLines.append(snipLine)
-
-		del snip.buffer[snip.line]
-
-	retLines.append("")
-	snip.expand_anon("\n".join(retLines))
-
-def genInitMemSnippet(snip):
+	Create a snippet for the initialization of class member variables in a
+	constructor.  Using the specified 'snip' object, the specified 'delimiter'
+	to determine when the list of variables has ended, the specified
+	'deleteDelimiter' to determine whether the delimiter should be deleted,
+	and the specified initDataFn to determine how the member should be
+	initialized.  'initDataFn' is called with the member being initialized,
+	and the current snippet tab number.
+	"""
 
 	# Search up for either 'basicAllocator' or 'allocator'
 	allocName = ""
@@ -124,20 +89,18 @@ def genInitMemSnippet(snip):
 
 	# If line above snip.line starts with ', ' or ': ' then we'll start with
 	# ', ', otherwise we'll start with ': '
-	prevLine = snip.buffer[snip.line].strip()
+	prevLine = snip.buffer[snip.line - 1].strip()
 	startSeparator = ", " if (prevLine.startswith(": ") or
 							  prevLine.startswith(", ")) else \
 					 ": "
 
 	retLines = []
 	snipNum = 2
-	while snip.buffer[snip.line].strip() != "---":
+	while snip.buffer[snip.line].strip() != delimiter:
 		l = snip.buffer[snip.line]
 
 		snipLine = ("$1" + startSeparator) if snipNum == 2 else ", "
-		snipLine += l + "("
-
-		snipLine += "$%d" % snipNum
+		snipLine += l + "(" + initDataFn(l, snipNum)
 		snipNum += 1
 
 		# Gen optional allocator for each member if constructor took an
@@ -154,7 +117,8 @@ def genInitMemSnippet(snip):
 
 		del snip.buffer[snip.line]
 
-	del snip.buffer[snip.line] # delete delimiter line
+	if deleteDelimiter:
+		del snip.buffer[snip.line]
 
 	retLines.append("")
 	snip.expand_anon("\n".join(retLines))
@@ -184,7 +148,7 @@ endglobal
 # TODO write some python to search up for a class/struct header to
 # auto-determine the class-name
 pre_expand "snip.buffer[snip.line] = ''; snip.cursor.set(snip.line, 0)"
-post_jump "if snip.tabstop == 0: genCctorMemSnippet(snip)"
+post_jump "if snip.tabstop == 0: genInitMemSnippet(snip, '{', False, lambda mem, snip: 'other.' + mem)"
 snippet cctor
 $1::$1(const $1& other, ${2:bslma::Allocator *basicAllocator = 0})
 $0`!p snip.rv = cleanupMembers(snip.v.text)`
@@ -195,7 +159,7 @@ endsnippet
 								# ctormem
 
 pre_expand "snip.buffer[snip.line] = ''; snip.cursor.set(snip.line, 0)"
-post_jump "if snip.tabstop == 0: genInitMemSnippet(snip)"
+post_jump "if snip.tabstop == 0: genInitMemSnippet(snip, '---', True, lambda mem, snipNum: '$%d' % snipNum)"
 snippet ctormem
 $0`!p snip.rv = cleanupMembers(snip.v.text)`
 ---
