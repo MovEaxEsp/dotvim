@@ -205,6 +205,10 @@ def appendToSnip(snip, s):
 	snip.buffer[snip.line] += s
 
 def genCctorSnippet(snip):
+	"""
+	Generate and expand a snippet for a copy constructor, using the
+	'snip.visual_content' as the data members to initialize.
+	"""
 	lines = [genTabStopPrePost("", 1, findClassName(snip), "") + \
 		"::$1(const $1& other" + \
 		genTabStopPrePost(
@@ -213,47 +217,74 @@ def genCctorSnippet(snip):
 
 	members = cleanupMembers(snip.visual_content)
 	snipNum = 3
+	separator = ": "
 	for mem in members.split("\n"):
-		snipLine = ": " if snipNum == 3 else ", "
+		snipLine = separator
 		snipLine += mem + "(other." + mem
 		snipLine += genTabStopPrePost(", ", snipNum, "$2", "")
-		snipNum += 1
 		snipLine += ")"
 		lines.append(snipLine)
+
+		separator = ", "
+		snipNum += 1
 
 	lines.append("{")
 	lines.append("}")
 
 	snip.expand_anon("\n".join(lines))
 
+def expandInitMemSnippet(snip):
+	# If line above snip.line starts with ', ' or ': ' then we'll start with
+	# ', ', otherwise we'll start with ': '
+	prevLine = snip.buffer[snip.line - 1].strip()
+	separator = ", " if (prevLine.startswith(": ") or
+						 prevLine.startswith(", ")) else \
+				": "
+
+	lines = []
+	snipNum = 1
+	for mem in cleanupMembers(snip.visual_content).split("\n"):
+		snipLine = separator
+		snipLine += mem + ("($%d" % snipNum)
+		snipLine += ")"
+		lines.append(snipLine)
+
+		snipNum += 1
+		separator = ", "
+
+	snip.expand_anon("\n".join(lines))
+
+
+
 endglobal
 
-                                   # ######
+                                   # #####
                                    # cctor
-                                   # ######
+                                   # #####
 
 pre_expand "clearSnipLine(snip); genCctorSnippet(snip)"
 snippet cctor
-$0
 endsnippet
 
                                   # #######
                                   # ctormem
                                   # #######
 
-pre_expand "clearSnipLine(snip)"
-post_jump "if snip.tabstop == 0: genInitMemSnippet(snip, '---', True, lambda mem, snipNum: '$%d' % snipNum)"
+pre_expand "clearSnipLine(snip); expandInitMemSnippet(snip)"
 snippet ctormem
-$0`!p snip.rv = cleanupMembers(snip.v.text)`
----
 endsnippet
 
-
-
+                                    # ###
+                                    # inc
+                                    # ###
 
 snippet inc "C include directive" b
 #include <$1.h>
 endsnippet
+
+                                   # #####
+                                   # class
+                                   # #####
 
 snippet class
 `!p snip.rv = centerBorder("=", "class " + t[1])`
@@ -262,6 +293,10 @@ snippet class
 
 `!p snip.rv = classDef(t[1])`
 endsnippet
+
+                                   # ######
+                                   # classh
+                                   # ######
 
 snippet classh
 `!p snip.rv = fileHeader_h(t[1], t[2])`
@@ -276,6 +311,10 @@ namespace $1 {
 `!p snip.rv = fileFooter_h()`
 endsnippet
 
+                                  # ########
+                                  # classcpp
+                                  # ########
+
 snippet classcpp
 `!p snip.rv = fileHeader_cpp(t[1], t[2])`
 namespace $1 {
@@ -287,6 +326,10 @@ namespace $1 {
 `!p snip.rv = fileFooter_cpp()`
 endsnippet
 
+                                   # ######
+                                   # struct
+                                   # ######
+
 snippet struct
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
 `!p snip.rv = centerPadding("// struct " + t[1]) + "// struct "`$1
@@ -295,6 +338,10 @@ snippet struct
 `!p snip.rv = structDef(t[1])`
 endsnippet
 
+                                    # ####
+                                    # util
+                                    # ####
+
 snippet util
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
 `!p snip.rv = centerPadding("// struct " + t[1]) + "// struct "`$1
@@ -302,6 +349,10 @@ snippet util
 
 `!p snip.rv = utilDef(t[1])`
 endsnippet
+
+                                   # #####
+                                   # utilh
+                                   # #####
 
 snippet utilh
 `!p snip.rv = fileHeader_h(t[1], t[2])`
@@ -316,6 +367,10 @@ namespace $1 {
 `!p snip.rv = fileFooter_h()`
 endsnippet
 
+                                  # #######
+                                  # utilcpp
+                                  # #######
+
 snippet utilcpp
 `!p snip.rv = fileHeader_cpp(t[1], t[2])`
 namespace $1 {
@@ -327,6 +382,10 @@ namespace $1 {
 `!p snip.rv = fileFooter_cpp()`
 endsnippet
 
+                                  # ########
+                                  # protocol
+                                  # ########
+
 snippet protocol
 `!p snip.rv = centerBorder("=", "class " + t[1])`
 `!p snip.rv = centerPadding("// class " + t[1]) + "// class "`$1
@@ -334,6 +393,10 @@ snippet protocol
 
 `!p snip.rv = protocolDef(t[1])`
 endsnippet
+
+                                 # #########
+                                 # protocolh
+                                 # #########
 
 snippet protocolh
 `!p snip.rv = fileHeader_h(t[1], t[2])`
@@ -347,6 +410,10 @@ namespace $1 {
 
 `!p snip.rv = fileFooter_h()`
 endsnippet
+
+                                # ###########
+                                # protocolcpp
+                                # ###########
 
 snippet protocolcpp
 `!p snip.rv = fileHeader_cpp(t[1], t[2])`
@@ -364,6 +431,10 @@ $2::~$2()
 `!p snip.rv = fileFooter_cpp()`
 endsnippet
 
+                                    # ####
+                                    # enum
+                                    # ####
+
 snippet enum
 `!p snip.rv = centerBorder("=", "struct " + t[1])`
 `!p snip.rv = centerPadding("// struct " + t[1]) + "// struct "`$1
@@ -371,6 +442,10 @@ snippet enum
 
 `!p snip.rv = enumDef(t[1])`
 endsnippet
+
+                                    # ###
+                                    # pod
+                                    # ###
 
 snippet pod
 `!p snip.rv = header("=", "class " + t[1])`
@@ -382,6 +457,10 @@ struct $1 {
 };
 
 endsnippet
+
+                                 # #########
+                                 # test_case
+                                 # #########
 
 snippet test_case "test case" m
 case $1: {
@@ -404,6 +483,9 @@ case $1: {
 } break;
 endsnippet
 
+                                   # ######
+                                   # inline
+                                   # ######
 
 snippet inline
 // ============================================================================
@@ -412,6 +494,10 @@ snippet inline
 
 $0
 endsnippet
+
+                                   # ######
+                                   # tester
+                                   # ######
 
 snippet tester
                                // ============
