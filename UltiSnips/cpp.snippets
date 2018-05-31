@@ -204,19 +204,37 @@ def appendToSnip(snip, s):
 
 	snip.buffer[snip.line] += s
 
+def genCctorSnippet(snip):
+	lines = [genTabStopPrePost("", 1, findClassName(snip), "") + \
+		"::$1(const $1& other" + \
+		genTabStopPrePost(
+					   ", bslma::Allocator *", 2, "basicAllocator", " = 0") + \
+		")"]
+
+	members = cleanupMembers(snip.visual_content)
+	snipNum = 3
+	for mem in members.split("\n"):
+		snipLine = ": " if snipNum == 3 else ", "
+		snipLine += mem + "(other." + mem
+		snipLine += genTabStopPrePost(", ", snipNum, "$2", "")
+		snipNum += 1
+		snipLine += ")"
+		lines.append(snipLine)
+
+	lines.append("{")
+	lines.append("}")
+
+	snip.expand_anon("\n".join(lines))
+
 endglobal
 
-                                   # #####
+                                   # ######
                                    # cctor
-                                   # #####
+                                   # ######
 
-pre_expand "clearSnipLine(snip);appendToSnip(snip, findClassName(snip))"
-post_jump "if snip.tabstop == 0: genInitMemSnippet(snip, '{', False, lambda mem, snip: 'other.' + mem)"
+pre_expand "clearSnipLine(snip); genCctorSnippet(snip)"
 snippet cctor
-$1::$1(const $1& other, ${2:bslma::Allocator *basicAllocator = 0})
-$0`!p snip.rv = cleanupMembers(snip.v.text)`
-{
-}
+$0
 endsnippet
 
                                   # #######
