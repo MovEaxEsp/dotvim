@@ -4,10 +4,8 @@ global !p
 from ultisnips_util import *
 endglobal
 
-snippet "h (.)" "A centered header" br
+snippet "h(.)" "A centered header" br
 `!p snip.rv = centerBorder(match.group(1), t[1], getFtCommentStr())`
 `!p snip.rv = centerPadding(getFtCommentStr() + t[1]) + getFtCommentStr()`$1
 `!p snip.rv = centerBorder(match.group(1), t[1], getFtCommentStr())`
 endsnippet
-
-

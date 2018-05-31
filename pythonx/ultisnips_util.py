@@ -21,7 +21,7 @@ def getFtCommentStr(ft = None):
     if not ft:
         ft = vim.current.buffer.options['ft']
 
-    if ft == "c" or ft == "cpp":
+    if ft == "c" or ft == "cpp" or ft == "javascript":
         return "// "
     elif ft == "python":
         return "# "

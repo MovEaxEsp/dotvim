@@ -64,6 +64,32 @@ def fileFooter_cpp():
 
 """ + copyright()
 
+def genTabStopPrePost(preText, tabStopNum, defaultVal, postText):
+	"""
+	Generate some python to produce a tabstop with some text before, and some
+	text after the tabstop if the tabstop isn't empty
+	"""
+
+	ret = ""
+
+	# Pre text
+	if len(preText) > 0:
+		ret += "`!p snip.rv = '" + preText + "' " + \
+				"if len(t[" + str(tabStopNum) + "]) > 0 else ''`";
+
+	# Tab stop
+	if defaultVal and len(defaultVal) > 0:
+		ret += "${" + str(tabStopNum) + ":" + defaultVal + "}"
+	else:
+		ret += "$" + str(tabStopNum)
+
+	# Post text
+	if len(postText) > 0:
+		ret += "`!p snip.rv = '" + postText + "' " + \
+				"if len(t[" + str(tabStopNum) + "]) > 0 else ''`";
+
+	return ret
+
 def genInitMemSnippet(snip, delimiter, deleteDelimiter, initDataFn):
 	"""
 	Create a snippet for the initialization of class member variables in a
@@ -106,12 +132,13 @@ def genInitMemSnippet(snip, delimiter, deleteDelimiter, initDataFn):
 		# Gen optional allocator for each member if constructor took an
 		# allocator
 		if len(allocName) > 0:
-			allocString = ("${%d:, " + allocName + "}") % snipNum
+			allocString = genTabStopPrePost(", ", snipNum, allocName, "")
+			#allocString = ("${%d:, " + allocName + "}") % snipNum
 			snipNum += 1
 
 			snipLine += allocString
 
-		snipLine += ")"
+			snipLine += ")"
 
 		retLines.append(snipLine)
 
@@ -122,6 +149,23 @@ def genInitMemSnippet(snip, delimiter, deleteDelimiter, initDataFn):
 
 	retLines.append("")
 	snip.expand_anon("\n".join(retLines))
+
+def findClassName(snip):
+	"""
+	Search up looking for a class/struct section name, and return the class
+	name if found, otherwise return None.  A section name looks like
+	// ---------- (or ======)
+	// class Foo
+	// ---------
+	"""
+
+	pattern = re.compile(r'^ *// (?:class|struct) (.*)')
+	for line in range(snip.line, 0, -1):
+		match = pattern.match(snip.buffer[line])
+		if (match):
+			return match.group(1)
+
+	return None
 
 def cleanupMembers(decl):
 	"""Cleanup the specified member variable declaration 'decl
@@ -141,13 +185,32 @@ def cleanupMembers(decl):
 
 	return mems
 
+def clearSnipLine(snip):
+	"""
+	Clear the current line of the specified 'snip' and set the current
+	position to the beginning of it.
+	"""
+	snip.buffer[snip.line] = ""
+	snip.cursor.set(snip.line, 0)
+
+def appendToSnip(snip, s):
+	"""
+	Append the specified 's' to the end of the current line of the specified
+	'snip', separating it from anything previous on the line with a ','
+	"""
+
+	if len(snip.buffer[snip.line]) > 0:
+		snip.buffer[snip.line] += ", "
+
+	snip.buffer[snip.line] += s
+
 endglobal
 
-								# cctor
+                                   # #####
+                                   # cctor
+                                   # #####
 
-# TODO write some python to search up for a class/struct header to
-# auto-determine the class-name
-pre_expand "snip.buffer[snip.line] = ''; snip.cursor.set(snip.line, 0)"
+pre_expand "clearSnipLine(snip);appendToSnip(snip, findClassName(snip))"
 post_jump "if snip.tabstop == 0: genInitMemSnippet(snip, '{', False, lambda mem, snip: 'other.' + mem)"
 snippet cctor
 $1::$1(const $1& other, ${2:bslma::Allocator *basicAllocator = 0})
@@ -156,9 +219,11 @@ $0`!p snip.rv = cleanupMembers(snip.v.text)`
 }
 endsnippet
 
-								# ctormem
+                                  # #######
+                                  # ctormem
+                                  # #######
 
-pre_expand "snip.buffer[snip.line] = ''; snip.cursor.set(snip.line, 0)"
+pre_expand "clearSnipLine(snip)"
 post_jump "if snip.tabstop == 0: genInitMemSnippet(snip, '---', True, lambda mem, snipNum: '$%d' % snipNum)"
 snippet ctormem
 $0`!p snip.rv = cleanupMembers(snip.v.text)`
@@ -168,7 +233,7 @@ endsnippet
 
 
 
-snippet inc "C include directive" bA
+snippet inc "C include directive" b
 #include <$1.h>
 endsnippet
 
