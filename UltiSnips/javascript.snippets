@@ -1,0 +1,114 @@
+global !p
+
+from ultisnips_util import *
+
+def clearSnipLine(snip):
+	"""
+	Clear the current line of the specified 'snip' and set the current
+	position to the beginning of it.
+	"""
+	snip.buffer[snip.line] = ""
+	snip.cursor.set(snip.line, 0)
+
+endglobal
+
+pre_expand "clearSnipLine(snip)"
+snippet method
+	/**
+	 * @method $2
+     * $0
+     *
+`!p for s in t[3].split(","):
+	snip.rv += "     * @param {} " + s.strip() + "\n"
+`     *
+     * @return {type}
+     */
+    $2: undefined,
+
+$1.$2 = function($3) {
+
+};
+endsnippet
+
+pre_expand "clearSnipLine(snip)"
+snippet module
+// $1.t.js                                          -*-JavaScript-*-
+
+define([
+],
+function (
+) {
+
+var $1 = {
+};
+
+
+return $1;
+
+});
+
+`!p snip.rv = copyright()`
+endsnippet
+
+                                # ###########
+                                # test_driver
+                                # ###########
+
+snippet test_driver
+// $1.t.js                                          -*-JavaScript-*-
+
+define([
+],
+function (
+) {
+
+// ============================================================================
+//                                TEST APPARATUS
+// ----------------------------------------------------------------------------
+
+var T      = JS.test;
+var H      = null;
+var assert = JS.assert;
+
+// ============================================================================
+//                                  TEST CASES
+// ----------------------------------------------------------------------------
+
+var cases = [
+    T.case("$2", function () {
+	$0
+    })
+];
+
+// ============================================================================
+//                                 MAIN PROGRAM
+// ----------------------------------------------------------------------------
+
+return {
+    main: function (context, parameters) {
+        H = T.harness(cases, parameters);
+        H.run();
+    }
+};
+
+});
+
+`!p snip.rv = copyright()`
+endsnippet
+
+                                   # #####
+                                   # delay
+                                   # #####
+
+snippet delay "Delay function useful in test drivers"
+function delay(ticks) {
+    function nextTick() {
+        if (0 >= ticks) {
+            return;
+        }
+        --ticks;
+        return Promise.resolve().then(nextTick);
+    }
+    return nextTick;
+}
+endsnippet
