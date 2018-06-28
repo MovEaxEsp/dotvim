@@ -121,8 +121,10 @@ if has("gui_running")
     set columns=86
     set lines=999
 
-else
+elseif has("nvim")
     colorscheme zenburn
+else
+    colorscheme ron
 endif
 
 " Terminal configuration
