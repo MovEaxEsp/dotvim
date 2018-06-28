@@ -1,7 +1,110 @@
 # Snippets common to C++ header/implementation files
 
 global !p
-from ultisnips_util import *
+from ultisnip_util import *
+
+def classDef(name):
+    """
+    Return the class definition for a class with the specified 'name'.
+    """
+
+    template = string.Template("""class $name {
+    // TODO
+
+  private:
+    // DATA
+
+    // NOT IMPLEMENTED
+    $name(const $name&);
+    $name& operator=(const $name&);
+
+  public:
+    // TRAITS
+    BSLMF_NESTED_TRAIT_DECLARATION($name,
+                                   bslma::UsesBslmaAllocator);
+
+    // CREATORS
+    explicit $name(bslma::Allocator *basicAllocator = 0);
+
+    // MANIPULATORS
+
+    // ACCESSORS
+};""")
+
+    return template.safe_substitute({"name":name})
+
+def structDef(name):
+    """
+    Return the definition for a struct with the specified 'name'.
+    """
+
+    template = string.Template("""struct $name {
+    // TODO
+
+  public:
+    // PUBLIC DATA
+
+    // NOT IMPLEMENTED
+    $name(const $name&);
+    $name& operator=(const $name&);
+
+  public:
+    // TRAITS
+    BSLMF_NESTED_TRAIT_DECLARATION($name,
+                                   bslma::UsesBslmaAllocator);
+
+    // CREATORS
+    explicit $name(bslma::Allocator *basicAllocator = 0);
+
+    // MANIPULATORS
+
+    // ACCESSORS
+};""")
+
+    return template.safe_substitute({"name":name})
+
+def utilDef(name):
+    """
+    Return the definition for a utility struct with the specified 'name'.
+    """
+
+    template = string.Template("""struct $name {
+    // TODO
+
+    // CLASS METHODS
+};""")
+
+    return template.safe_substitute({"name":name})
+
+def protocolDef(name):
+    """
+    Return the definition of a protocol class with the specified 'name'.
+    """
+
+    template = string.Template("""class $name {
+
+  public:
+    // CREATORS
+    virtual ~$name();
+
+    // MANIPULATORS
+};""")
+
+    return template.safe_substitute({"name":name})
+
+def enumDef(name):
+    """
+    Return the definition of an enum struct with the specified 'name'.
+    """
+
+    template = string.Template("""struct $name {
+
+    enum Enum {
+
+    };
+};""")
+
+    return template.safe_substitute({"name":name})
 
 # Return the file header for the specified package and component in a header
 # file
@@ -64,215 +167,7 @@ def fileFooter_cpp():
 
 """ + copyright()
 
-def genTabStopPrePost(preText, tabStopNum, defaultVal, postText):
-	"""
-	Generate some python to produce a tabstop with some text before, and some
-	text after the tabstop if the tabstop isn't empty
-	"""
-
-	ret = ""
-
-	# Pre text
-	if len(preText) > 0:
-		ret += "`!p snip.rv = '" + preText + "' " + \
-				"if len(t[" + str(tabStopNum) + "]) > 0 else ''`";
-
-	# Tab stop
-	if defaultVal and len(defaultVal) > 0:
-		ret += "${" + str(tabStopNum) + ":" + defaultVal + "}"
-	else:
-		ret += "$" + str(tabStopNum)
-
-	# Post text
-	if len(postText) > 0:
-		ret += "`!p snip.rv = '" + postText + "' " + \
-				"if len(t[" + str(tabStopNum) + "]) > 0 else ''`";
-
-	return ret
-
-def genInitMemSnippet(snip, delimiter, deleteDelimiter, initDataFn):
-	"""
-	Create a snippet for the initialization of class member variables in a
-	constructor.  Using the specified 'snip' object, the specified 'delimiter'
-	to determine when the list of variables has ended, the specified
-	'deleteDelimiter' to determine whether the delimiter should be deleted,
-	and the specified initDataFn to determine how the member should be
-	initialized.  'initDataFn' is called with the member being initialized,
-	and the current snippet tab number.
-	"""
-
-	# Search up for either 'basicAllocator' or 'allocator'
-	allocName = ""
-	for l in range(snip.line, 0, -1):
-		if re.match(r'.*\bbasicAllocator\b', snip.buffer[l]):
-			allocName = "basicAllocator"
-			break
-		elif re.match(r'.*\ballocator\b', snip.buffer[l]):
-			allocName = "allocator"
-			break
-		elif len(snip.buffer[l].strip()) == 0:
-			break
-
-	# If line above snip.line starts with ', ' or ': ' then we'll start with
-	# ', ', otherwise we'll start with ': '
-	prevLine = snip.buffer[snip.line - 1].strip()
-	startSeparator = ", " if (prevLine.startswith(": ") or
-							  prevLine.startswith(", ")) else \
-					 ": "
-
-	retLines = []
-	snipNum = 2
-	while snip.buffer[snip.line].strip() != delimiter:
-		l = snip.buffer[snip.line]
-
-		snipLine = ("$1" + startSeparator) if snipNum == 2 else ", "
-		snipLine += l + "(" + initDataFn(l, snipNum)
-		snipNum += 1
-
-		# Gen optional allocator for each member if constructor took an
-		# allocator
-		if len(allocName) > 0:
-			allocString = genTabStopPrePost(", ", snipNum, allocName, "")
-			#allocString = ("${%d:, " + allocName + "}") % snipNum
-			snipNum += 1
-
-			snipLine += allocString
-
-			snipLine += ")"
-
-		retLines.append(snipLine)
-
-		del snip.buffer[snip.line]
-
-	if deleteDelimiter:
-		del snip.buffer[snip.line]
-
-	retLines.append("")
-	snip.expand_anon("\n".join(retLines))
-
-def findClassName(snip):
-	"""
-	Search up looking for a class/struct section name, and return the class
-	name if found, otherwise return None.  A section name looks like
-	// ---------- (or ======)
-	// class Foo
-	// ---------
-	"""
-
-	pattern = re.compile(r'^ *// (?:class|struct) (.*)')
-	for line in range(snip.line, 0, -1):
-		match = pattern.match(snip.buffer[line])
-		if (match):
-			return match.group(1)
-
-	return None
-
-def cleanupMembers(decl):
-	"""Cleanup the specified member variable declaration 'decl
-	'' by removing all comments and types and leaving just member names
-	without semicolons."""
-
-	# Remove comments
-	mems = re.sub(r'//.*', '', decl)
-
-	# Remove empty
-	mems = re.sub(r'\n\s*\n', '\n', mems, 0, re.MULTILINE)
-
-	# Remove declarations/semicolon
-	mems = "\n".join(
-		[re.sub(r'.*[ *&]([^ *&]*);.*', r'\1', l) \
-			for l in mems.split('\n')[:-1]])
-
-	return mems
-
-def clearSnipLine(snip):
-	"""
-	Clear the current line of the specified 'snip' and set the current
-	position to the beginning of it.
-	"""
-	snip.buffer[snip.line] = ""
-	snip.cursor.set(snip.line, 0)
-
-def appendToSnip(snip, s):
-	"""
-	Append the specified 's' to the end of the current line of the specified
-	'snip', separating it from anything previous on the line with a ','
-	"""
-
-	if len(snip.buffer[snip.line]) > 0:
-		snip.buffer[snip.line] += ", "
-
-	snip.buffer[snip.line] += s
-
-def genCctorSnippet(snip):
-	"""
-	Generate and expand a snippet for a copy constructor, using the
-	'snip.visual_content' as the data members to initialize.
-	"""
-	lines = [genTabStopPrePost("", 1, findClassName(snip), "") + \
-		"::$1(const $1& other" + \
-		genTabStopPrePost(
-					   ", bslma::Allocator *", 2, "basicAllocator", " = 0") + \
-		")"]
-
-	members = cleanupMembers(snip.visual_content)
-	snipNum = 3
-	separator = ": "
-	for mem in members.split("\n"):
-		snipLine = separator
-		snipLine += mem + "(other." + mem
-		snipLine += genTabStopPrePost(", ", snipNum, "$2", "")
-		snipLine += ")"
-		lines.append(snipLine)
-
-		separator = ", "
-		snipNum += 1
-
-	lines.append("{")
-	lines.append("}")
-
-	snip.expand_anon("\n".join(lines))
-
-def expandInitMemSnippet(snip):
-	# If line above snip.line starts with ', ' or ': ' then we'll start with
-	# ', ', otherwise we'll start with ': '
-	prevLine = snip.buffer[snip.line - 1].strip()
-	separator = ", " if (prevLine.startswith(": ") or
-						 prevLine.startswith(", ")) else \
-				": "
-
-	lines = []
-	snipNum = 1
-	for mem in cleanupMembers(snip.visual_content).split("\n"):
-		snipLine = separator
-		snipLine += mem + ("($%d" % snipNum)
-		snipLine += ")"
-		lines.append(snipLine)
-
-		snipNum += 1
-		separator = ", "
-
-	snip.expand_anon("\n".join(lines))
-
-
-
 endglobal
-
-                                   # #####
-                                   # cctor
-                                   # #####
-
-pre_expand "clearSnipLine(snip); genCctorSnippet(snip)"
-snippet cctor
-endsnippet
-
-                                  # #######
-                                  # ctormem
-                                  # #######
-
-pre_expand "clearSnipLine(snip); expandInitMemSnippet(snip)"
-snippet ctormem
-endsnippet
 
                                     # ###
                                     # inc

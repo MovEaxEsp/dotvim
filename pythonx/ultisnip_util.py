@@ -1,5 +1,12 @@
+""""
+ultisnip_util.py: Utility functions used by snippets
+"""
+
+import bdeformatutil
 import string
 import vim
+import parseutil
+from sectiontype import SectionType
 
 def copyright():
     import datetime
@@ -61,109 +68,4 @@ def header(border, text):
         centerComment(text) + text,
         centerBorder(border, text)]
     return "\n".join(lines)
-
-
-def classDef(name):
-    """
-    Return the class definition for a class with the specified 'name'.
-    """
-
-    template = string.Template("""class $name {
-    // TODO
-
-  private:
-    // DATA
-
-    // NOT IMPLEMENTED
-    $name(const $name&);
-    $name& operator=(const $name&);
-
-  public:
-    // TRAITS
-    BSLMF_NESTED_TRAIT_DECLARATION($name,
-                                   bslma::UsesBslmaAllocator);
-
-    // CREATORS
-    explicit $name(bslma::Allocator *basicAllocator = 0);
-
-    // MANIPULATORS
-
-    // ACCESSORS
-};""")
-
-    return template.safe_substitute({"name":name})
-
-def structDef(name):
-    """
-    Return the definition for a struct with the specified 'name'.
-    """
-
-    template = string.Template("""struct $name {
-    // TODO
-
-  public:
-    // PUBLIC DATA
-
-    // NOT IMPLEMENTED
-    $name(const $name&);
-    $name& operator=(const $name&);
-
-  public:
-    // TRAITS
-    BSLMF_NESTED_TRAIT_DECLARATION($name,
-                                   bslma::UsesBslmaAllocator);
-
-    // CREATORS
-    explicit $name(bslma::Allocator *basicAllocator = 0);
-
-    // MANIPULATORS
-
-    // ACCESSORS
-};""")
-
-    return template.safe_substitute({"name":name})
-
-def utilDef(name):
-    """
-    Return the definition for a utility struct with the specified 'name'.
-    """
-
-    template = string.Template("""struct $name {
-    // TODO
-
-    // CLASS METHODS
-};""")
-
-    return template.safe_substitute({"name":name})
-
-def protocolDef(name):
-    """
-    Return the definition of a protocol class with the specified 'name'.
-    """
-
-    template = string.Template("""class $name {
-
-  public:
-    // CREATORS
-    virtual ~$name();
-
-    // MANIPULATORS
-};""")
-
-    return template.safe_substitute({"name":name})
-
-def enumDef(name):
-    """
-    Return the definition of an enum struct with the specified 'name'.
-    """
-
-    template = string.Template("""struct $name {
-
-    enum Enum {
-
-    };
-};""")
-
-    return template.safe_substitute({"name":name})
-
 
