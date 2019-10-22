@@ -12,6 +12,10 @@ def clearSnipLine(snip):
 
 endglobal
 
+                                   # ######
+                                   # method
+                                   # ######
+
 pre_expand "clearSnipLine(snip)"
 snippet method
 	/**
@@ -30,18 +34,38 @@ $1.$2 = function($3) {
 };
 endsnippet
 
+                                   # ######
+                                   # module
+                                   # ######
+
 pre_expand "clearSnipLine(snip)"
 snippet module
-// $1.js                                          -*-JavaScript-*-
+// ${1/.*/\L$0\E/g}.js                                          -*-JavaScript-*-
 
 define([
+	"@${2:js}",
+	"@${3:runtime}",
+	"#moduleid"
 ],
 function (
+	JS,
+	Runtime,
+	ModuleId
 ) {
 
-var $1 = {
+var logger = new Runtime.Logger(ModuleId);
+
+`!p snip.rv = centerBorder("=", t[1])`
+`!p snip.rv = centerPadding("// " + t[1]) + "// "`$1
+`!p snip.rv = centerBorder("=", t[1])`
+
+const $1 = {
+$0
 };
 
+`!p snip.rv = centerBorder("-", t[1])`
+`!p snip.rv = centerPadding("// " + t[1]) + "// "`$1
+`!p snip.rv = centerBorder("-", t[1])`
 
 return $1;
 
@@ -66,15 +90,15 @@ function (
 //                                TEST APPARATUS
 // ----------------------------------------------------------------------------
 
-var T      = JS.test;
-var H      = null;
-var assert = JS.assert;
+const T      = JS.test;
+let   H      = null;
+const assert = JS.assert;
 
 // ============================================================================
 //                                  TEST CASES
 // ----------------------------------------------------------------------------
 
-var cases = [
+const cases = [
     T.case("$2", function () {
 	$0
     })
@@ -96,19 +120,20 @@ return {
 `!p snip.rv = copyright()`
 endsnippet
 
-                                   # #####
-                                   # delay
-                                   # #####
+                                  # #########
+                                  # test_case
+                                  # #########
 
-snippet delay "Delay function useful in test drivers"
-function delay(ticks) {
-    function nextTick() {
-        if (0 >= ticks) {
-            return;
-        }
-        --ticks;
-        return Promise.resolve().then(nextTick);
-    }
-    return nextTick;
-}
+pre_expand "clearSnipLine(snip)"
+snippet test_case
+    // ------------------------------------------------------------------------
+    // $1
+    //
+    // Concerns:
+	//  a) $0
+    // ------------------------------------------------------------------------
+    T.case("$1", async function () {
+		// TODO
+    }),
+
 endsnippet

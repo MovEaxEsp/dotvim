@@ -25,7 +25,6 @@ Plug 'Valloric/YouCompleteMe'
 Plug 'Lokaltog/vim-easymotion'
 Plug 'tommcdo/vim-exchange'
 Plug 'tpope/vim-fugitive'
-Plug 'vim-scripts/Gundo'
 Plug 'vim-scripts/matchit.zip'
 Plug 'ervandew/sgmlendtag'
 Plug 'ervandew/supertab'
@@ -34,6 +33,9 @@ Plug 'SirVer/ultisnips'
 Plug 'junegunn/vim-easy-align'
 Plug 'jnurmine/Zenburn'
 Plug 'itchyny/lightline.vim'
+Plug 'godlygeek/tabular'
+Plug 'mbbill/undotree'
+Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
 
 call plug#end()
 
@@ -81,7 +83,7 @@ set relativenumber
 set textwidth=78
 set numberwidth=6 " Width of 'number'/'relativenumber' section
 set scrolloff=20 " Keep lines above and below cursor when possible
-set nohidden
+set hidden
 set confirm
 set signcolumn=yes
 set showtabline=2 "Always show tab line, even with only one tab
@@ -147,7 +149,6 @@ if has("nvim")
 	au TermOpen * setlocal list signcolumn=no nonumber
 endif
 
-
 highlight OverLength guibg=#592929
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
@@ -169,16 +170,57 @@ let g:ctrlp_prompt_mappings = {
     \ }
 let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 nnoremap <leader><C-P> :CtrlP<CR>
+nnoremap <leader>b :CtrlPBuffer<CR>
 
-" Gundo Settings
-nnoremap <F5> :GundoToggle<CR>
-let g:gundo_preview_height = 40
-let g:gundo_preview_bottom = 1
+" Undotree Settings
+nnoremap <F5> :UndotreeToggle<CR>
 
 " UltiSnips Settings
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-l>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+
+" nvim-gdb
+function! SetGdbMappings()
+    " Set up mapping for the 'nvimgdb' code window
+    call GdbCallAsync("keymaps.set")
+
+    map <buffer> <localleader>c :GdbContinue<CR>
+    map <buffer> <localleader>s :GdbBreakpointToggle<CR>
+    map <buffer> <localleader>e :GdbEvalWord<CR>
+    map <buffer> <localleader>r :GdbRun<CR>
+    map <buffer> <UP> :GdbFrameUp<CR>
+    map <buffer> <C-UP> :GdbFinish<CR>
+    map <buffer> <DOWN> :GdbFrameDown<CR>
+    map <buffer> <C-DOWN> :GdbUntil<CR>
+    map <buffer> <RIGHT> :GdbNext<CR>
+    map <buffer> <C-RIGHT> :GdbStep<CR>
+endfunction
+
+function! UnsetGdbMappings()
+    " Clear the buffer-local GDB mappings
+    call GdbCallAsync("keymaps.unset")
+
+    unmap <buffer> <localleader>c
+    unmap <buffer> <localleader>s
+    unmap <buffer> <localleader>e
+    unmap <buffer> <localleader>r
+    unmap <buffer> <UP>
+    unmap <buffer> <C-UP>
+    unmap <buffer> <DOWN>
+    unmap <buffer> <C-DOWN>
+    unmap <buffer> <RIGHT>
+    unmap <buffer> <C-RIGHT>
+endfunction
+
+let g:nvimgdb_config_override = {
+    \ 'key_frameup': '',
+    \ 'key_framedown': '',
+    \ 'set_keymaps': 'SetGdbMappings',
+    \ 'unset_keymaps': 'UnsetGdbMappings'
+\ }
+
+map <leader>g :call SetGdbMappings()<CR>
 
 " make YCM compatible with UltiSnips (using supertab)
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
@@ -197,6 +239,7 @@ nnoremap // /
 
 "**** BINDINGS
 let mapleader = "\\"
+let maplocalleader = "\\"
 
 " Next/Prev tab
 map <TAB> gt
@@ -205,7 +248,6 @@ map <S-TAB> gT
 "Opening files
 map <Leader>t :tabedit 
 map <Leader>e :edit 
-map <Leader>b :tab sb 
 
 " Open corresponding .h/.cpp in same window
 map <silent> <Leader><TAB> :A<CR>
@@ -214,6 +256,8 @@ map <silent> <Leader><TAB> :A<CR>
 " .cpp exists.
 let g:alternateExtensions_h = "cpp,c,cxx,cc,CC"
 let g:alternateExtensions_H = "CPP,C,CXX,CC"
+let g:alternateExtensions_js = "bml"
+let g:alternateExtensions_bml = "js"
 
 " Run the last Ex command again
 map <C-Return> :<Up><CR>
@@ -267,7 +311,10 @@ map <silent> <Leader>p :BDEFormat<CR>
 nmap gV `[V`]
 
 " Set width of window
-map <leader>c :set columns=86<CR>
+"map <leader>c :set columns=86<CR>
+
+" Align on =
+map <leader>a :Tabularize /=.*[;,]<CR>
 
 "**** AUTOCMDS
 " Open the specified file (using BDE naming scheme) in new tab
@@ -284,4 +331,6 @@ autocmd BufWinLeave * call clearmatches()
 autocmd FileType xml setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType xsd setlocal shiftwidth=2 tabstop=2 softtabstop=2
 
-autocmd BufNewFile,BufRead *.md set filetype=markdown
+autocmd BufNewFile,BufRead *.md  set filetype=markdown
+autocmd BufNewFile,BufRead *.bml set filetype=xml
+

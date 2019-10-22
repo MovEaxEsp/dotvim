@@ -21,7 +21,7 @@ def classDef(name):
   public:
     // TRAITS
     BSLMF_NESTED_TRAIT_DECLARATION($name,
-                                   bslma::UsesBslmaAllocator);
+                                   bslma::UsesBslmaAllocator)
 
     // CREATORS
     explicit $name(bslma::Allocator *basicAllocator = 0);
@@ -51,7 +51,7 @@ def structDef(name):
   public:
     // TRAITS
     BSLMF_NESTED_TRAIT_DECLARATION($name,
-                                   bslma::UsesBslmaAllocator);
+                                   bslma::UsesBslmaAllocator)
 
     // CREATORS
     explicit $name(bslma::Allocator *basicAllocator = 0);
@@ -343,7 +343,7 @@ endsnippet
                                     # ###
 
 snippet pod
-`!p snip.rv = header("=", "class " + t[1])`
+`!p snip.rv = header("=", "struct " + t[1])`
 
 struct $1 {
 	// TODO
@@ -392,7 +392,7 @@ endsnippet
 
                                    # ######
                                    # tester
-                                   # ######
+                                   # ###### 
 
 snippet tester
                                // ============
@@ -400,7 +400,7 @@ snippet tester
                                // ============
 
 class Tester {
-    // Helper class testing $1, wrapping its creation and
+    // Helper class testing a $1, wrapping its creation and
     // providing convenient wrappers for calling its functions and checking
     // its results.
     //
@@ -409,7 +409,7 @@ class Tester {
     // occurred.
 
     // DATA
-    bslma::Allocator      *d_allocator_p
+    bslma::Allocator      *d_allocator_p;
     bslma::ManagedPtr<$1>  d_object;
 
     // PRIVATE MANIPULATORS
@@ -423,7 +423,7 @@ class Tester {
   public:
     // TRAITS
     BSLMF_NESTED_TRAIT_DECLARATION(Tester,
-    							   bslma::UsesBslmaAllocator);
+    							   bslma::UsesBslmaAllocator)
 
     // CREATORS
     explicit Tester(bslma::Allocator *basicAllocator = 0);
@@ -457,7 +457,7 @@ Tester::Tester(bslma::Allocator *basicAllocator)
 {
 }
 
-Tester::Tester()
+Tester::~Tester()
 {
 	destroy();
 }
@@ -465,6 +465,8 @@ Tester::Tester()
 // MANIPULATORS
 void Tester::init(int line)
 {
+	destroy();
+
     d_object.load(new (*d_allocator_p) $1(d_allocator_p),
                   d_allocator_p);
 }
@@ -474,4 +476,24 @@ $1& Tester::object()
     return *d_object;
 }
 
+endsnippet
+
+                                  # #########
+                                  # test_loop
+                                  # #########
+snippet test_loop "test loop" m
+const struct TestData {
+    int d_line;
+	$0
+} DATA[] = {
+    { L_ },
+};
+const int NUM_DATA = sizeof(DATA)/sizeof(*DATA);
+
+for (int dataIdx = 0; dataIdx < NUM_DATA; ++dataIdx) {
+    const TestData& data = DATA[dataIdx];
+    const int LINE = data.d_line;
+
+    P(LINE);
+}
 endsnippet
