@@ -7,6 +7,8 @@ if has("win32") || has("win64")
     set runtimepath+=$HOME/.vim/after
 endif
 
+let inVscode = exists('g:vscode')
+
 set nocompatible
 autocmd!
 filetype off
@@ -14,28 +16,35 @@ filetype off
 " Plugins
 call plug#begin('~/.vim/plugs')
 
-Plug 'scrooloose/nerdtree'
-Plug 'vim-scripts/a.vim'
 Plug 'MovEaxEsp/bdeformat'
-Plug 'FelikZ/ctrlp-py-matcher'
-Plug 'ctrlpvim/ctrlp.vim'
-"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-"Plug 'tweekmonster/deoplete-clang2'
-Plug 'Valloric/YouCompleteMe'
-Plug 'Lokaltog/vim-easymotion'
 Plug 'tommcdo/vim-exchange'
-Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/matchit.zip'
-Plug 'ervandew/sgmlendtag'
-Plug 'ervandew/supertab'
 Plug 'tomtom/tlib_vim'
 Plug 'SirVer/ultisnips'
 Plug 'junegunn/vim-easy-align'
-Plug 'jnurmine/Zenburn'
-Plug 'itchyny/lightline.vim'
-Plug 'godlygeek/tabular'
-Plug 'mbbill/undotree'
-Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
+
+if inVscode
+    Plug 'asvetliakov/vim-easymotion', { 'as': 'vscodevim-easymotion' }
+else
+    if has("nvim")
+        Plug 'neovim/nvim-lspconfig'
+        Plug 'nvim-lua/completion-nvim'
+    endif
+    Plug 'scrooloose/nerdtree'
+    Plug 'vim-scripts/a.vim'
+    Plug 'FelikZ/ctrlp-py-matcher'
+    Plug 'ctrlpvim/ctrlp.vim'
+    "Plug 'Valloric/YouCompleteMe'
+    Plug 'Lokaltog/vim-easymotion'
+    Plug 'tpope/vim-fugitive'
+    Plug 'ervandew/sgmlendtag'
+    "Plug 'ervandew/supertab'
+    Plug 'jnurmine/Zenburn'
+    Plug 'itchyny/lightline.vim'
+    Plug 'godlygeek/tabular'
+    Plug 'mbbill/undotree'
+    Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
+endif
 
 call plug#end()
 
@@ -47,6 +56,106 @@ endif
 map Yg :YcmCompleter GoTo<CR>
 map Yf :YcmCompleter FixIt<CR>
 map Yt :YcmCompleter GetType<CR>
+
+" LSP
+if has("nvim")
+
+lua << EOF
+
+local custom_attach = function(client)
+    print("LSP started.");
+
+    require'completion'.on_attach(client)
+
+    --[[
+    utils.map('n','gD','<cmd>lua vim.lsp.buf.declaration()<CR>')
+    utils.map('n','gd','<cmd>lua vim.lsp.buf.definition()<CR>')
+    utils.map('n','K','<cmd>lua vim.lsp.buf.hover()<CR>')
+    utils.map('n','gr','<cmd>lua vim.lsp.buf.references()<CR>')
+    utils.map('n','gs','<cmd>lua vim.lsp.buf.signature_help()<CR>')
+    utils.map('n','gi','<cmd>lua vim.lsp.buf.implementation()<CR>')
+    utils.map('n','gt','<cmd>lua vim.lsp.buf.type_definition()<CR>')
+    utils.map('n','<leader>gw','<cmd>lua vim.lsp.buf.document_symbol()<CR>')
+    utils.map('n','<leader>gW','<cmd>lua vim.lsp.buf.workspace_symbol()<CR>')
+    utils.map('n','<leader>ah','<cmd>lua vim.lsp.buf.hover()<CR>')
+    utils.map('n','<leader>ac','<cmd>lua vim.lsp.buf.code_action()<CR>')
+    utils.map('n','<leader>ee','<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>')
+    utils.map('n','<leader>ar','<cmd>lua vim.lsp.buf.rename()<CR>')
+    utils.map('n','<leader>=', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+    utils.map('n','<leader>ai','<cmd>lua vim.lsp.buf.incoming_calls()<CR>')
+    utils.map('n','<leader>ao','<cmd>lua vim.lsp.buf.outgoing_calls()<CR>')
+    utils.map('n','[q',':cnext<CR>')
+    utils.map('n',']q',':cprev<CR>')
+    utils.map('n',']h',':ClangdSwitchSourceHeader<CR>')
+    --]]
+end
+
+_G.swap_arrows = function()
+    if _G.arrowMode == 1 then
+        print("Switching arrows to lsp")
+        _G.arrowMode = 2
+        vim.api.nvim_set_keymap('n',
+                                '<left>',
+                                ':lua vim.lsp.diagnostic.goto_prev()<CR>', {})
+        vim.api.nvim_set_keymap('n',
+                                '<right>',
+                                ':lua vim.lsp.diagnostic.goto_next()<CR>', {})
+        vim.api.nvim_set_keymap('n',
+                                '<up>',
+                                ':lua vim.lsp.buf.definition()<CR>', {})
+    else
+        print("Switching arrows to quickfix")
+        _G.arrowMode = 1
+        vim.api.nvim_set_keymap('n', '<left>', ':cp<CR>zz', {})
+        vim.api.nvim_set_keymap('n', '<right>', ':cn<CR>zz', {})
+        vim.api.nvim_set_keymap('n', '<up>', ':cc<CR>', {})
+        vim.api.nvim_set_keymap('n', '<down>', ':make<CR>', {})
+    end
+end
+_G.arrowMode = 2
+swap_arrows()
+
+require'lspconfig'.clangd.setup({
+ cmd={"/usr/local/Cellar/llvm/13.0.1_1/bin/clangd", "--background-index"},
+ on_attach=custom_attach
+})
+
+EOF
+
+nnoremap <leader>aa :lua swap_arrows()<CR>
+
+"inoremap <silent><expr> <C-Space> compe#complete()
+"inoremap <silent><expr> <CR>      compe#confirm('<CR>')
+"inoremap <silent><expr> <C-e>     compe#close('<C-e>')
+"inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
+"inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
+
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
+let g:completion_enable_snippet = 'UltiSnips'
+
+map <leader>c :tabnew \| term<CR>
+tnoremap <leader><esc> <C-\><C-n>
+
+nmap <leader>lgd :lua vim.lsp.buf.declaration()<CR>
+nmap <leader>lgD :lua vim.lsp.buf.definition()<CR>
+nmap <right> :lua vim.lsp.diagnostic.goto_next()<CR>
+nmap <left> :lua vim.lsp.diagnostic.goto_prev()<CR>
+
+else
+" Non-nvim settings
+
+" For building
+map <Left> :cp<CR>zz
+map <Right> :cn<CR>zz
+map <Up> :cc<CR>
+map <Down> :make<CR>
+
+endif " if nvim
 
 set guioptions-=m "No menu bar
 set guioptions-=T "No toolbar
@@ -176,7 +285,7 @@ nnoremap <leader>b :CtrlPBuffer<CR>
 nnoremap <F5> :UndotreeToggle<CR>
 
 " UltiSnips Settings
-let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsExpandTrigger="<c-q>"
 let g:UltiSnipsJumpForwardTrigger="<c-l>"
 let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
@@ -233,9 +342,8 @@ vmap a= :EasyAlign =<CR>
 
 " vim-easymotion settings
 map <leader>f <Plug>(easymotion-s)
-map <leader>w <Plug>(easymotion-w)
-map / <Plug>(easymotion-sn)
-nnoremap // /
+map <leader>w <Plug>(easymotion-bd-w)
+map // <Plug>(easymotion-sn)
 
 "**** BINDINGS
 let mapleader = "\\"
@@ -274,12 +382,6 @@ map <Leader>V :source $MYVIMRC<CR>
 imap <C-BS> <C-w>
 imap <S-Del> <Del>
 
-" For building
-map <Left> :cp<CR>zz
-map <Right> :cn<CR>zz
-map <Up> :cc<CR>
-map <Down> :make<CR>
-
 " For navigating splits
 map <C-Right> <C-w>l
 map <C-Left> <C-w>h
@@ -317,16 +419,15 @@ nmap gV `[V`]
 map <leader>a :Tabularize /=.*[;,]<CR>
 
 "**** AUTOCMDS
-" Open the specified file (using BDE naming scheme) in new tab
-command! -nargs=1 BDEFile :call TabBDEFile("<args>")
-
-" Highlight trailing whitespace
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
+if !inVscode
+    " Highlight trailing whitespace
+    highlight ExtraWhitespace ctermbg=red guibg=red
+    match ExtraWhitespace /\s\+$/
+    autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+    autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+    autocmd BufWinLeave * call clearmatches()
+endif
 
 autocmd FileType xml setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType xsd setlocal shiftwidth=2 tabstop=2 softtabstop=2
