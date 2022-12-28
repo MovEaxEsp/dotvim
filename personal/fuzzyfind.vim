@@ -3,27 +3,79 @@ if g:doingPlugs
 " Plugins
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 
+if has("nvim")
+    Plug 'nvim-telescope/telescope.nvim'
+endif
+
 finish
 endif
 
 " Configuration
 
+map <Leader>e :edit 
+
 " Open files in new tabs
+if has("nvim")
+
+lua << EOF
+
+require("telescope").setup{
+    pickers = {
+        buffers = {
+          sort_mru = true,
+          ignore_current_buffer = true,
+          mappings = {
+            i = {
+              ["<c-d>"] = "delete_buffer",
+              ["<tab>"] = "move_selection_previous",
+              ["<s-tab>"] = "move_selection_next",
+            }
+          }
+        },
+        find_files = {
+            follow = true
+        }
+    }
+}
+
+EOF
+
+map <C-p> :lua require("telescope.builtin").find_files({follow=true, cwd=vim.g.codeLinksDir, search_dirs={vim.g.codeLinksDir}})<CR>
+"map <C-p> :Telescope find_files<CR>
+
+" Search from current dir
+map <leader><C-p> :Telescope find_files cwd=.<CR>
+
+"map <Leader>b :lua require("telescope.builtin").buffers({sort_mru=true, ignore_current_buffer=true})<CR>
+map <Leader>b :Telescope buffers<CR>
+
+else
+    " Non-nvim configuration
 function! MYFZF(dir, findArg)
     let srcStr = 'find ' . a:findArg . ' -type f | grep -v "cmake.bld\|.ccls-cache\|.git"'
     echo srcStr
     call fzf#run(fzf#wrap({
             \ 'source': srcStr,
-            \ 'sink': 'tabedit',
+            \ 'sink': '$tabedit',
             \ 'dir': a:dir,
             \ 'options': '-e'}))
 endfunction
 
-nnoremap <C-p> :call MYFZF('~/dev/repoLinks', '*/')<CR>
+nnoremap <C-p> :call MYFZF(g:codeLinksDir, '*/')<CR>
 nnoremap <leader><C-p> :call MYFZF('.', ' ')<CR>
 
 let g:fzf_action = {
   \ 'ctrl-e': 'split' }
+
+map <Leader>b :b 
+
+endif
+
+
+
+
+
+
 
 " Defunct ctrlp configuration
 "if g:doingPlugs

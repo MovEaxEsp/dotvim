@@ -30,6 +30,7 @@ for i in [0, 1]
         else
             if has("nvim")
                 Plug 'nvim-treesitter/nvim-treesitter'
+                Plug 'nvim-lua/plenary.nvim'
             endif
             Plug 'Lokaltog/vim-easymotion'
             Plug 'ervandew/sgmlendtag'
@@ -50,6 +51,8 @@ for i in [0, 1]
     source ~/.vim/personal/fuzzyfind.vim
     source ~/.vim/personal/git.vim
     source ~/.vim/personal/gui.vim
+    source ~/.vim/personal/tabs.vim
+    source ~/.vim/personal/spell.vim
     if has("nvim")
         source ~/.vim/personal/lsp.vim
         source ~/.vim/personal/completion.vim
@@ -104,11 +107,7 @@ set scrolloff=20 " Keep lines above and below cursor when possible
 set hidden
 set confirm
 set signcolumn=yes
-set showtabline=2 "Always show tab line, even with only one tab
 set colorcolumn=80
-
-"Show if modified, buffer number, and filename
-set guitablabel=%M\ %n\ %t
 
 if has("gui_running")
     if has("win32") || has("win64") || has("gui_macvim")
@@ -124,7 +123,23 @@ endif
 
 " Terminal configuration
 if has("nvim")
-    map <silent> <leader>x :tabnew\|term<CR>
+
+    function NewTerminalFn(bufName)
+      $tabnew
+      term
+      exec "file {" . a:bufName . "}"
+    endfunction
+
+    "map <leader>x :tabnew\|term<CR>:TabooRename 
+    command -nargs=1 NewTerminal :call NewTerminalFn("<args>")
+    "command -nargs=1 NewTerminal :$tabnew <bar> term <bar> keepalt file a:bufName
+
+    " Create terminal
+    map <leader>xc :NewTerminal 
+
+    " Rename terminal
+    command -nargs=1 RenameTerminal exec "file {<args>}"
+    map <leader>xr :RenameTerminal 
 
     " Maximum scrollback size
     set scrollback=100000
@@ -144,7 +159,10 @@ if has("nvim")
     inoremap <A-Right> <C-\><C-N><C-w>l
     nnoremap <A-Right> <C-\><C-N><C-w>l
 
-	au TermOpen * setlocal list signcolumn=no nonumber
+    " https://github.com/vim/vim/issues/6040
+    tmap <S-Space> <Space>
+
+    au TermOpen * setlocal nolist signcolumn=no nonumber | highlight clear ExtraWhitespace
 endif
 
 " Undotree Settings
@@ -161,15 +179,6 @@ map // <Plug>(easymotion-sn)
 "**** BINDINGS
 let mapleader = "\\"
 let maplocalleader = "\\"
-
-" Next/Prev tab
-map <silent> <TAB> :tabn<CR>
-map <silent> <S-TAB> :tabp<CR>
-
-"Opening files
-map <Leader>t :tabedit 
-map <Leader>e :edit 
-map <Leader>b :tab sb 
 
 " Run the last Ex command again
 map <C-Return> :<Up><CR>
@@ -192,10 +201,6 @@ map <C-Right> <C-w>l
 map <C-Left> <C-w>h
 map <C-Down> <C-w>j
 map <C-Up> <C-w>k
-
-" For moving tabs
-map <silent><C-H> :call MoveTab(-1)<CR>
-map <silent><C-L> :call MoveTab(1)<CR>
 
 " Toggle displaying menu bar
 map <silent><Leader>m :if &guioptions=~'m'<Bar>set guioptions-=m<Bar>else<Bar>set guioptions+=m<Bar>endif<CR>
@@ -220,15 +225,15 @@ nmap gV `[V`]
 map <leader>a :Tabularize /=.*[;,]<CR>
 
 "**** AUTOCMDS
-"if !inVscode
-"    " Highlight trailing whitespace
-"    highlight ExtraWhitespace ctermbg=red guibg=red
-"    match ExtraWhitespace /\s\+$/
-"    autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-"    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-"    autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-"    autocmd BufWinLeave * call clearmatches()
-"endif
+if !inVscode
+    " Highlight trailing whitespace
+    highlight ExtraWhitespace ctermbg=red guibg=red
+    match ExtraWhitespace /\s\+$/
+    autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+    autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+    autocmd BufWinLeave * call clearmatches()
+endif
 
 autocmd FileType xml setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType xsd setlocal shiftwidth=2 tabstop=2 softtabstop=2
