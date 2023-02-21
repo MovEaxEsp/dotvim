@@ -142,7 +142,7 @@ if has("nvim")
     map <leader>xr :RenameTerminal 
 
     " Maximum scrollback size
-    set scrollback=100000
+    set scrollback=10000
 
     tmap <leader><Esc> <C-\><C-n>
 
@@ -162,7 +162,8 @@ if has("nvim")
     " https://github.com/vim/vim/issues/6040
     tmap <S-Space> <Space>
 
-    au TermOpen * setlocal nolist signcolumn=no nonumber | highlight clear ExtraWhitespace
+    au TermOpen * setlocal nolist signcolumn=no nonumber
+    au TermEnter * call clearmatches()
 endif
 
 " Undotree Settings

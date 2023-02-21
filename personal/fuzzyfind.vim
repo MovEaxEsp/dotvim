@@ -46,8 +46,9 @@ map <C-p> :lua require("telescope.builtin").find_files({follow=true, cwd=vim.g.c
 " Search from current dir
 map <leader><C-p> :Telescope find_files cwd=.<CR>
 
-"map <Leader>b :lua require("telescope.builtin").buffers({sort_mru=true, ignore_current_buffer=true})<CR>
 map <Leader>b :Telescope buffers<CR>
+
+map <Leader>g :Telescope live_grep<CR>
 
 else
     " Non-nvim configuration

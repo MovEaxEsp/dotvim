@@ -46,5 +46,3 @@ let g:nvimgdb_config_override = {
     \ 'set_keymaps': 'SetGdbMappings',
     \ 'unset_keymaps': 'UnsetGdbMappings'
 \ }
-
-map <leader>g :call SetGdbMappings()<CR>

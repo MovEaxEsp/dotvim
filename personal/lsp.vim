@@ -87,5 +87,4 @@ nnoremap <leader>aa :lua swap_arrows()<CR>
 
 nmap <leader>lgd :lua vim.lsp.buf.declaration()<CR>
 nmap <leader>lgD :lua vim.lsp.buf.definition()<CR>
-nmap <right> :lua vim.lsp.diagnostic.goto_next()<CR>
-nmap <left> :lua vim.lsp.diagnostic.goto_prev()<CR>
+nmap <leader>lgr :lua vim.lsp.buf.references()<CR>
