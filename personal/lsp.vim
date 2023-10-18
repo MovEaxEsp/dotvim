@@ -2,6 +2,7 @@ if g:doingPlugs
 
 " Plugins
 Plug 'neovim/nvim-lspconfig'
+Plug 'nvimdev/lspsaga.nvim'
 
 finish
 
@@ -77,14 +78,39 @@ local lspconfig = require'lspconfig'
 lspconfig.ccls.setup {
   init_options = {
     cache = {
-      directory = ".ccls-cache";
+      directory = "/root/.ccls-cache";
     };
   }
 }
+
+lspconfig.pylsp.setup{
+  settings = {
+    pylsp = {
+      plugins = {
+        pycodestyle = {
+          ignore = {'E122', 'E126', 'E127',
+                    'E201', 'E202', 'E221', 'E226', 'E241', 'E251',
+                    'E301', 'E302', 'E303',
+                    'E402',
+                    'W504'},
+          maxLineLength = 79
+        }
+      }
+    }
+  }
+}
+
+require('lspsaga').setup({
+
+})
+
 EOF
 
-nnoremap <leader>aa :lua swap_arrows()<CR>
+if has("nvim")
+    nnoremap <leader>aa :lua swap_arrows()<CR>
 
-nmap <leader>lgd :lua vim.lsp.buf.declaration()<CR>
-nmap <leader>lgD :lua vim.lsp.buf.definition()<CR>
-nmap <leader>lgr :lua vim.lsp.buf.references()<CR>
+    nmap <leader>ld :lua vim.lsp.buf.declaration()<CR>
+    nmap <leader>lD :lua vim.lsp.buf.definition()<CR>
+    nmap <leader>lr :Telescope lsp_references<CR>
+    nmap <leader>lp :Lspsaga peek_definition<CR>
+endif

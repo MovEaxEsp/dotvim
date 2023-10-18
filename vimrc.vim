@@ -110,14 +110,33 @@ set signcolumn=yes
 set colorcolumn=80
 
 if has("gui_running")
-    if has("win32") || has("win64") || has("gui_macvim")
-        let g:smallFont = "Consolas:h11"
-        let g:bigFont = "Consolas:h24"
-        set guifont=Consolas:h11
-    elseif has("x11")
-        let g:smallFont = "Consolas\\ 13"
-        let g:bigFont = "Consolas\\ 24"
-        set guifont=Consolas\ 13
+    if exists("g:neovide")
+lua << EOF
+_G.updateFont = function()
+    if vim.g.neovide_scale_factor == 1.0 then
+        vim.g.neovide_scale_factor = 2.0
+    elseif vim.g.neovide_scale_factor == 2.0 then
+        vim.g.neovide_scale_factor = 0.7
+    else
+        vim.g.neovide_scale_factor = 1.0
+    end
+end
+EOF
+
+        map <silent><leader>F :lua updateFont()<CR>
+
+    else
+        if has("win32") || has("win64") || has("gui_macvim")
+            let g:smallFont = "Consolas:h11"
+            let g:bigFont = "Consolas:h24"
+            set guifont=Consolas:h11
+        elseif has("x11")
+            let g:smallFont = "Consolas\\ 13"
+            let g:bigFont = "Consolas\\ 24"
+            set guifont=Consolas\ 13
+        endif
+
+        map <silent><Leader>F :if &guifont=~g:bigFont<Bar>call SetOptionString("guifont", g:smallFont)<Bar>else<Bar>call SetOptionString("guifont", g:bigFont)<Bar>endif<CR>
     endif
 endif
 
@@ -164,6 +183,9 @@ if has("nvim")
 
     au TermOpen * setlocal nolist signcolumn=no nonumber
     au TermEnter * call clearmatches()
+
+    " for tmux
+    tmap <leader>b <C-b>
 endif
 
 " Undotree Settings
@@ -205,9 +227,6 @@ map <C-Up> <C-w>k
 
 " Toggle displaying menu bar
 map <silent><Leader>m :if &guioptions=~'m'<Bar>set guioptions-=m<Bar>else<Bar>set guioptions+=m<Bar>endif<CR>
-
-" Toggle big/small font
-map <silent><Leader>F :if &guifont=~g:bigFont<Bar>call SetOptionString("guifont", g:smallFont)<Bar>else<Bar>call SetOptionString("guifont", g:bigFont)<Bar>endif<CR>
 
 " Toggle spell checking
 map <silent><Leader>s :if &spell<Bar>set nospell<Bar>else<Bar>set spell<Bar>endif<CR>

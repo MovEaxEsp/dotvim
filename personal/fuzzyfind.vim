@@ -21,19 +21,32 @@ lua << EOF
 
 require("telescope").setup{
     pickers = {
+        defaults = {
+            layout_strategy = 'vertical',
+            layout_config = { height = 0.95 },
+        },
         buffers = {
-          sort_mru = true,
-          ignore_current_buffer = true,
-          mappings = {
-            i = {
-              ["<c-d>"] = "delete_buffer",
-              ["<tab>"] = "move_selection_previous",
-              ["<s-tab>"] = "move_selection_next",
-            }
-          }
+            sort_mru = true,
+            ignore_current_buffer = true,
+            mappings = {
+                i = {
+                    ["<c-d>"] = "delete_buffer",
+                    ["<tab>"] = "move_selection_previous",
+                    ["<s-tab>"] = "move_selection_next",
+                }
+            },
+            layout_strategy = 'vertical',
+            layout_config = { height = 0.95 },
+        },
+        live_grep = {
+            follow = true,
+            layout_strategy = 'vertical',
+            layout_config = { height = 0.95 },
         },
         find_files = {
-            follow = true
+            follow = true,
+            layout_strategy = 'vertical',
+            layout_config = { height = 0.95 },
         }
     }
 }
