@@ -10,8 +10,10 @@ endif
 " Configuration
 set showtabline=2 "Always show tab line, even with only one tab
 
-"Show if modified, buffer number, and filename
-set guitablabel=%M\ %n\ %t
+if !has("nvim")
+    "Show if modified, buffer number, and filename
+    set guitablabel=%M\ %n\ %t
+endif
 
 " Next/Prev tab
 map <silent> <TAB> :tabn<CR>
@@ -21,7 +23,7 @@ noremap <C-S-o> <C-I>
 map <silent> <S-TAB> :tabp<CR>
 
 "Opening files
-map <Leader>t :$tabedit 
+map <Leader>te :$tabedit 
 map <silent> <leader>T :$tabedit <cfile><CR>
 
 " For moving tabs

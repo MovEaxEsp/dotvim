@@ -2,7 +2,7 @@ if g:doingPlugs
 
 " Plugins
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvimdev/lspsaga.nvim'
+Plug 'nvimdev/lspsaga.nvim', { 'branch': 'main' }
 
 finish
 
@@ -75,6 +75,8 @@ require'lspconfig'.clangd.setup({
 --print(os.execute("cd"))
 --package.path = package.path .. ";/root/.vim/plugs/nvim-lspconfig/lua/lspconfig.lua"
 local lspconfig = require'lspconfig'
+
+--[[
 lspconfig.ccls.setup {
   init_options = {
     cache = {
@@ -82,13 +84,17 @@ lspconfig.ccls.setup {
     };
   }
 }
+--]]
+lspconfig.clangd.setup {}
+
+lspconfig.ts_ls.setup {}
 
 lspconfig.pylsp.setup{
   settings = {
     pylsp = {
       plugins = {
         pycodestyle = {
-          ignore = {'E122', 'E126', 'E127',
+          ignore = {'E114', 'E116', 'E122', 'E126', 'E127', 'E131',
                     'E201', 'E202', 'E221', 'E226', 'E241', 'E251',
                     'E301', 'E302', 'E303',
                     'E402',
@@ -103,14 +109,20 @@ lspconfig.pylsp.setup{
 require('lspsaga').setup({
 
 })
+require("which-key").add({
+    { "<leader>l", group="LSP" },
+    { "<leader>la", desc="Swap arrow key function",
+      function() swap_arrows() end },
+    { "<leader>ld", desc="Show Declaration",
+      function() vim.lsp.buf.declaration() end },
+    { "<leader>lD", desc="Show Definition",
+      function() vim.lsp.buf.definition() end },
+    { "<leader>lr", desc="LSP References",
+      "<cmd>Telescope lsp_references<cr>" },
+    { "<leader>lp", desc="Peek Definition",
+      "<cmd>Lspsaga peek_definition<cr>" },
+    { "<leader>lh", desc="Toggle inlay hint",
+      function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end }
+})
 
 EOF
-
-if has("nvim")
-    nnoremap <leader>aa :lua swap_arrows()<CR>
-
-    nmap <leader>ld :lua vim.lsp.buf.declaration()<CR>
-    nmap <leader>lD :lua vim.lsp.buf.definition()<CR>
-    nmap <leader>lr :Telescope lsp_references<CR>
-    nmap <leader>lp :Lspsaga peek_definition<CR>
-endif

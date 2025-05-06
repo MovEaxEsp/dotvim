@@ -24,6 +24,7 @@ for i in [0, 1]
         Plug 'vim-scripts/matchit.zip'
         Plug 'tomtom/tlib_vim'
         Plug 'junegunn/vim-easy-align'
+        Plug 'github/copilot.vim'
 
         if inVscode
             Plug 'asvetliakov/vim-easymotion', { 'as': 'vscodevim-easymotion' }
@@ -31,6 +32,7 @@ for i in [0, 1]
             if has("nvim")
                 Plug 'nvim-treesitter/nvim-treesitter'
                 Plug 'nvim-lua/plenary.nvim'
+                Plug 'folke/which-key.nvim'
             endif
             Plug 'Lokaltog/vim-easymotion'
             Plug 'ervandew/sgmlendtag'
@@ -109,6 +111,10 @@ set confirm
 set signcolumn=yes
 set colorcolumn=80
 
+" Copilot
+let g:copilot_proxy = "http://proxy.bloomberg.com:81"
+let g:copilot_proxy_strict_ssl = v:false
+
 if has("gui_running")
     if exists("g:neovide")
 lua << EOF
@@ -121,9 +127,11 @@ _G.updateFont = function()
         vim.g.neovide_scale_factor = 1.0
     end
 end
+
 EOF
 
         map <silent><leader>F :lua updateFont()<CR>
+        let g:neovide_scroll_animation_length=0
 
     else
         if has("win32") || has("win64") || has("gui_macvim")
@@ -140,18 +148,34 @@ EOF
     endif
 endif
 
+" Init which-key
+if has("nvim")
+lua << EOF
+
+require("which-key").setup {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+}
+EOF
+endif
+
 " Terminal configuration
 if has("nvim")
 
-    function NewTerminalFn(bufName)
+    function NewTerminalFn(bufName, ...)
       $tabnew
-      term
+      let termCmd = get(a:, 1, "")
+      if termCmd != ""
+        exec "term " .termCmd
+      else
+        term
+      endif
+
       exec "file {" . a:bufName . "}"
     endfunction
 
-    "map <leader>x :tabnew\|term<CR>:TabooRename 
     command -nargs=1 NewTerminal :call NewTerminalFn("<args>")
-    "command -nargs=1 NewTerminal :$tabnew <bar> term <bar> keepalt file a:bufName
 
     " Create terminal
     map <leader>xc :NewTerminal 

@@ -51,17 +51,26 @@ require("telescope").setup{
     }
 }
 
+require("which-key").add({
+    { "<leader>t", group="Telescope" },
+    { "<leader>tf", desc="Find Global",
+      function() require("telescope.builtin").find_files({follow=true, cwd=vim.g.codeLinksDir, search_dirs={vim.g.codeLinksDir}}) end },
+    { "<leader>tc", desc="Find in CWD",
+      "<cmd>Telescope find_files cwd=.<cr>" },
+    { "<leader>tb", desc="Find Buffer",
+      "<cmd>Telescope buffers<cr>" },
+    { "<leader>tg", desc="Live Grep",
+      "<cmd>Telescope live_grep<cr>", },
+    { "<leader>tr", desc="Resume Last",
+      "<cmd>Telescope resume<cr>" },
+})
+
 EOF
 
 map <C-p> :lua require("telescope.builtin").find_files({follow=true, cwd=vim.g.codeLinksDir, search_dirs={vim.g.codeLinksDir}})<CR>
-"map <C-p> :Telescope find_files<CR>
 
 " Search from current dir
 map <leader><C-p> :Telescope find_files cwd=.<CR>
-
-map <Leader>b :Telescope buffers<CR>
-
-map <Leader>g :Telescope live_grep<CR>
 
 else
     " Non-nvim configuration

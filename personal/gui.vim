@@ -10,8 +10,10 @@ endif
 set guioptions-=m "No menu bar
 set guioptions-=T "No toolbar
 
-"Show full path
-set guitabtooltip=%F
+if !has("nvim")
+    "Show full path
+    set guitabtooltip=%F
+endif
 
 if has("gui_running")
     " Make the window 80 columns wide and as tall as possible
